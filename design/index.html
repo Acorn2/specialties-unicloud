@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 首页</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .container, .px-4, .map-container, .card {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .fixed {
+            width: 100%;
+            max-width: 390px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-sizing: border-box;
+        }
+        
+        .brand-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-bar {
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tag {
+            border-radius: 12px;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+        }
+        
+        .food-tag {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .craft-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .fresh-tag {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .festival-tag {
+            background-color: #E74C3C;
+            color: white;
+        }
+        
+        .nav-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background-color: rgba(216, 57, 49, 0.3);
+            margin: 0 2px;
+        }
+        
+        .nav-indicator.active {
+            width: 16px;
+            background-color: #D83931;
+        }
+        
+        .map-container {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .location-marker {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(216, 57, 49, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .destination-card {
+            width: 110px;
+            height: 150px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .destination-card img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .destination-card:active img {
+            transform: scale(1.05);
+        }
+        
+        .destination-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+            font-weight: 600;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+        
+        .rank-badge {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #D83931;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .tab-item {
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab-item.active {
+            color: #D83931;
+            position: relative;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: #D83931;
+            border-radius: 3px;
+        }
+        
+        /* 微信小程序标准底部导航栏样式 */
+        .fixed {
+            width: 100%;
+            max-width: 390px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-sizing: border-box;
+        }
+        
+        /* 底部导航栏项目样式 */
+        .fixed a {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .fixed a:active {
+            opacity: 0.85; /* 仅添加简单的点击反馈 */
+        }
+        
+        /* 优化图标和文字的垂直对齐 */
+        .fixed i {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 优化文字大小和行高 */
+        .fixed span {
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部搜索 (固定在顶部) -->
+        <div class="sticky top-0 z-10 px-4 pt-8 pb-3 brand-gradient">
+            <div class="flex items-center mb-3">
+                <h1 class="text-xl font-bold text-white flex-1">风物舆图</h1>
+            </div>
+            
+            <div class="flex search-bar bg-white p-2.5 items-center">
+                <i class="fas fa-search text-gray-400 mx-2"></i>
+                <input type="text" placeholder="搜索地方特产、美食..." class="flex-1 outline-none text-sm">
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            
+            <!-- 热门目的地 -->
+            <div class="px-4 mt-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold">热门目的地</h2>
+                    <a href="hot-destinations.html" class="text-sm text-gray-500 flex items-center">
+                        查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="flex space-x-3 overflow-x-auto pb-2 hide-scrollbar">
+                    <a href="map-specialty.html?province=hubei" class="destination-card flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1505993597083-3bd19fb75ef6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgxMDM&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="湖北">
+                        <div class="destination-name">湖北</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=sichuan" class="destination-card flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgxNDI&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="四川">
+                        <div class="destination-name">四川</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=guangdong" class="destination-card flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="广东">
+                        <div class="destination-name">广东</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=zhejiang" class="destination-card flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1529883406927-7de37457a0cf?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1MzgyODY&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="浙江">
+                        <div class="destination-name">浙江</div>
+                    </a>
+                    
+                    <a href="map-specialty.html" class="destination-card flex-shrink-0 flex items-center justify-center bg-gray-100">
+                        <div class="text-center">
+                            <i class="fas fa-globe-asia text-gray-400 text-2xl mb-2"></i>
+                            <div class="text-gray-500 font-medium">更多地区</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 特产分类 -->
+            <div class="px-4 mt-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold">特产分类</h2>
+                    <a href="category.html" class="text-sm text-gray-500 flex items-center">
+                        查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i>
+                    </a>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- 主食 -->
+                    <div class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-bowl-rice text-[#F7C873] text-xl"></i>
+                        </div>
+                        <span class="text-xs">主食</span>
+                    </div>
+                    
+                    <!-- 副食 -->
+                    <div class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-jar text-[#9B59B6] text-xl"></i>
+                        </div>
+                        <span class="text-xs">副食</span>
+                    </div>
+                    
+                    <!-- 小吃 -->
+                    <div class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-cookie text-[#58D68D] text-xl"></i>
+                        </div>
+                        <span class="text-xs">小吃</span>
+                    </div>
+                    
+                    <!-- 茶叶 -->
+                    <div class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-mug-hot text-[#1ABC9C] text-xl"></i>
+                        </div>
+                        <span class="text-xs">茶叶</span>
+                    </div>
+                    
+                    <!-- 水果 -->
+                    <div class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-apple-whole text-[#2ECC71] text-xl"></i>
+                        </div>
+                        <span class="text-xs">水果</span>
+                    </div>
+                    
+                    <!-- 更多分类 -->
+                    <a href="category.html" class="card flex flex-col items-center justify-center py-3">
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-ellipsis text-[#34495E] text-xl"></i>
+                        </div>
+                        <span class="text-xs">更多分类</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 推荐特产 -->
+            <div class="px-4 mt-5 mb-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold">推荐特产</h2>
+                    <a href="map-specialty.html" class="text-sm text-gray-500 flex items-center">
+                        查看更多 <i class="fas fa-chevron-right text-xs ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="space-y-3">
+                    <!-- 随机特产1：热干面 -->
+                    <a href="detail.html?id=hb002" class="card p-3 flex items-center block">
+                        <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="热干面" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-center mb-1">
+                                <h3 class="font-medium">热干面</h3>
+                                <span class="text-xs text-[#8B5000] bg-[#F7C873] ml-2 px-1.5 py-0.5 rounded">主食</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">武汉名小吃，香、咸、辣、甜，回味悠长...</p>
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-500">湖北省·武汉</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 随机特产2：宜昌柑橘 -->
+                    <a href="detail.html?id=hb004" class="card p-3 flex items-center block">
+                        <img src="https://images.unsplash.com/photo-1591183137550-fd9c8ff4a485?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="宜昌柑橘" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-center mb-1">
+                                <h3 class="font-medium">宜昌柑橘</h3>
+                                <span class="text-xs text-[#1D6640] bg-[#58D68D] ml-2 px-1.5 py-0.5 rounded">生鲜</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">色泽金黄，汁多味甜，果肉细嫩...</p>
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-500">湖北省·宜昌</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 随机特产3：沙糖桔 -->
+                    <a href="detail.html?id=gd001" class="card p-3 flex items-center block">
+                        <img src="https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="沙糖桔" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="ml-4 flex-1">
+                            <div class="flex items-center mb-1">
+                                <h3 class="font-medium">沙糖桔</h3>
+                                <span class="text-xs text-[#1D6640] bg-[#58D68D] ml-2 px-1.5 py-0.5 rounded">生鲜</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-2">皮薄汁多、甜酸适口，富含维生素C...</p>
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-500">广东省·江门</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部标签栏 (固定在底部) -->
+        <div class="bg-white border-t border-gray-200 w-full">
+            <div class="flex justify-around items-center px-4 py-1.5">
+                <a href="index.html" class="flex flex-col items-center">
+                    <i class="fas fa-home text-gray-500"></i>
+                    <span class="text-xs mt-0.5 text-[#D83931]">首页</span>
+                </a>
+                
+                <a href="map-specialty.html" class="flex flex-col items-center">
+                    <i class="fas fa-compass text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">地图</span>
+                </a>
+                
+                <a href="ranking.html" class="flex flex-col items-center">
+                    <i class="fas fa-trophy text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">榜单</span>
+                </a>
+                
+                <a href="profile.html" class="flex flex-col items-center">
+                    <i class="fas fa-user text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

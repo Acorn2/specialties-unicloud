@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 我的足迹</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .footprint-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-container {
+            display: flex;
+            border-radius: 8px;
+            background-color: #F0ECE6;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background-color: white;
+            color: #D83931;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .footprint-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .footprint-date {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .footprint-info {
+            padding: 12px;
+        }
+        
+        .footprint-category {
+            display: inline-block;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-right: 6px;
+        }
+        
+        .food-tag {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .craft-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .fresh-tag {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .drink-tag {
+            background-color: #3498DB;
+            color: white;
+        }
+        
+        .timeline-container {
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #E0E0E0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 4px;
+            top: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #D83931;
+            z-index: 1;
+        }
+        
+        .timeline-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background-color: rgba(216, 57, 49, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .filter-container {
+            padding: 0 16px 12px 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .filter-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: #F0ECE6;
+            color: #666;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tag.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .list-view, .timeline-view, .map-view {
+            display: none;
+        }
+        
+        .active-view {
+            display: block;
+        }
+        
+        .map-container {
+            height: 200px;
+            background-color: #e5e5e5;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .map-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #D83931;
+            color: white;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* 标签式分类按钮样式 */
+        .list-category-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            background-color: #F0ECE6;
+            color: #666666;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .list-category-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        /* 全部类别的按钮特殊样式 */
+        .list-category-btn[data-category="all"] {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .list-category-btn[data-category="all"].active {
+            background-color: #D83931;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <div class="footprint-gradient pt-10 pb-3 px-4">
+            <div class="flex items-center">
+                <a href="profile.html" class="text-white">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white ml-4 flex-1">我的足迹</h1>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 视图切换标签 -->
+            <div class="p-4">
+                <div class="tab-container">
+                    <div class="tab active" data-view="list">列表</div>
+                    <div class="tab" data-view="timeline">时间轴</div>
+                    <div class="tab" data-view="map">地图</div>
+                </div>
+            </div>
+            
+            <!-- 替换原有的筛选标签部分 -->
+            <div class="p-4 pb-2">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-base font-medium">特产分类</h2>
+                </div>
+                
+                <!-- 标签式分类列表 -->
+                <div class="flex flex-wrap">
+                    <button class="list-category-btn active" data-category="all">全部</button>
+                    <button class="list-category-btn" data-category="food">主食</button>
+                    <button class="list-category-btn" data-category="material">副食</button>
+                    <button class="list-category-btn" data-category="snack">小吃</button>
+                    <button class="list-category-btn" data-category="dessert">零食</button>
+                    <button class="list-category-btn" data-category="alcohol">烟酒</button>
+                    <button class="list-category-btn" data-category="tea">茶叶</button>
+                    <button class="list-category-btn" data-category="drink">饮料</button>
+                    <button class="list-category-btn" data-category="fruit">水果</button>
+                    <button class="list-category-btn" data-category="vegetable">蔬菜</button>
+                    <button class="list-category-btn" data-category="seafood">水产海鲜</button>
+                    <button class="list-category-btn" data-category="craft">工艺品</button>
+                    <button class="list-category-btn" data-category="medicine">药材</button>
+                    <button class="list-category-btn" data-category="flower">花卉</button>
+                </div>
+            </div>
+            
+            <!-- 列表视图 -->
+            <div class="list-view active-view px-4 pb-4">
+                <!-- 足迹项目 -->
+                <div class="footprint-item card">
+                    <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="郫县豆瓣酱" class="w-full h-36 object-cover rounded-t-xl">
+                    <div class="footprint-date">今天 10:30</div>
+                    <div class="footprint-info">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">郫县豆瓣酱</h3>
+                            <span class="text-xs text-gray-500">四川省·成都</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="footprint-category food-tag">副食</span>
+                        </div>
+                        <p class="text-xs text-gray-600">四川郫县特产，色泽红亮，香辣浓郁，被誉为川菜的灵魂。</p>
+                    </div>
+                </div>
+                
+                <div class="footprint-item card">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="苏州刺绣" class="w-full h-36 object-cover rounded-t-xl">
+                    <div class="footprint-date">昨天 16:45</div>
+                    <div class="footprint-info">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">苏州刺绣</h3>
+                            <span class="text-xs text-gray-500">江苏省·苏州</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="footprint-category craft-tag">工艺品</span>
+                        </div>
+                        <p class="text-xs text-gray-600">中国四大名绣之一，以绣工精细、针法严谨、色彩典雅著称。</p>
+                    </div>
+                </div>
+                
+                <div class="footprint-item card">
+                    <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="西湖龙井" class="w-full h-36 object-cover rounded-t-xl">
+                    <div class="footprint-date">3天前</div>
+                    <div class="footprint-info">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">西湖龙井</h3>
+                            <span class="text-xs text-gray-500">浙江省·杭州</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="footprint-category drink-tag">茶饮</span>
+                        </div>
+                        <p class="text-xs text-gray-600">中国十大名茶之一，以色翠、香郁、味甘、形美四绝著称。</p>
+                    </div>
+                </div>
+                
+                <div class="footprint-item card">
+                    <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="热干面" class="w-full h-36 object-cover rounded-t-xl">
+                    <div class="footprint-date">5天前</div>
+                    <div class="footprint-info">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">热干面</h3>
+                            <span class="text-xs text-gray-500">湖北省·武汉</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="footprint-category food-tag">主食</span>
+                        </div>
+                        <p class="text-xs text-gray-600">武汉名小吃，香、咸、辣、甜，回味悠长。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴视图 -->
+            <div class="timeline-view px-4 pb-4">
+                <!-- 今天 -->
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">今天</div>
+                    
+                    <div class="footprint-item card ml-2 mb-6">
+                        <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="郫县豆瓣酱" class="w-full h-36 object-cover rounded-t-xl">
+                        <div class="footprint-date">10:30</div>
+                        <div class="footprint-info">
+                            <div class="flex justify-between mb-2">
+                                <h3 class="font-medium">郫县豆瓣酱</h3>
+                                <span class="text-xs text-gray-500">四川省·成都</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="footprint-category food-tag">副食</span>
+                            </div>
+                            <p class="text-xs text-gray-600">四川郫县特产，色泽红亮，香辣浓郁，被誉为川菜的灵魂。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 昨天 -->
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">昨天</div>
+                    
+                    <div class="footprint-item card ml-2 mb-6">
+                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="苏州刺绣" class="w-full h-36 object-cover rounded-t-xl">
+                        <div class="footprint-date">16:45</div>
+                        <div class="footprint-info">
+                            <div class="flex justify-between mb-2">
+                                <h3 class="font-medium">苏州刺绣</h3>
+                                <span class="text-xs text-gray-500">江苏省·苏州</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="footprint-category craft-tag">工艺品</span>
+                            </div>
+                            <p class="text-xs text-gray-600">中国四大名绣之一，以绣工精细、针法严谨、色彩典雅著称。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3天前 -->
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">3天前</div>
+                    
+                    <div class="footprint-item card ml-2 mb-6">
+                        <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="西湖龙井" class="w-full h-36 object-cover rounded-t-xl">
+                        <div class="footprint-info">
+                            <div class="flex justify-between mb-2">
+                                <h3 class="font-medium">西湖龙井</h3>
+                                <span class="text-xs text-gray-500">浙江省·杭州</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="footprint-category drink-tag">茶饮</span>
+                            </div>
+                            <p class="text-xs text-gray-600">中国十大名茶之一，以色翠、香郁、味甘、形美四绝著称。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 5天前 -->
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">5天前</div>
+                    
+                    <div class="footprint-item card ml-2 mb-6">
+                        <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="热干面" class="w-full h-36 object-cover rounded-t-xl">
+                        <div class="footprint-info">
+                            <div class="flex justify-between mb-2">
+                                <h3 class="font-medium">热干面</h3>
+                                <span class="text-xs text-gray-500">湖北省·武汉</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="footprint-category food-tag">主食</span>
+                            </div>
+                            <p class="text-xs text-gray-600">武汉名小吃，香、咸、辣、甜，回味悠长。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 地图视图 -->
+            <div class="map-view px-4 pb-4">
+                <!-- 地图容器 -->
+                <div class="map-container">
+                    <!-- 假设的地图背景 -->
+                    <img src="https://images.unsplash.com/photo-1578827833595-5cb30eeb9a41?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="中国地图" class="w-full h-full object-cover">
+                    
+                    <!-- 地图标记点 -->
+                    <div class="map-marker" style="top: 40%; left: 30%;">川</div>
+                    <div class="map-marker" style="top: 45%; left: 70%;">苏</div>
+                    <div class="map-marker" style="top: 38%; left: 75%;">浙</div>
+                    <div class="map-marker" style="top: 42%; left: 57%;">鄂</div>
+                </div>
+                
+                <!-- 足迹列表 -->
+                <h3 class="font-medium mb-3">我的足迹列表</h3>
+                
+                <div class="space-y-3">
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=60&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=60" alt="郫县豆瓣酱" class="w-12 h-12 object-cover rounded-lg">
+                        
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium">郫县豆瓣酱</h3>
+                                <span class="text-xs text-gray-500">今天 10:30</span>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-600">四川省·成都</span>
+                                <span class="footprint-category food-tag ml-2" style="font-size: 9px; padding: 0px 4px;">副食</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=60&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=60" alt="苏州刺绣" class="w-12 h-12 object-cover rounded-lg">
+                        
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium">苏州刺绣</h3>
+                                <span class="text-xs text-gray-500">昨天 16:45</span>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-600">江苏省·苏州</span>
+                                <span class="footprint-category craft-tag ml-2" style="font-size: 9px; padding: 0px 4px;">工艺品</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=60&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=60" alt="西湖龙井" class="w-12 h-12 object-cover rounded-lg">
+                        
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium">西湖龙井</h3>
+                                <span class="text-xs text-gray-500">3天前</span>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-600">浙江省·杭州</span>
+                                <span class="footprint-category drink-tag ml-2" style="font-size: 9px; padding: 0px 4px;">茶饮</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=60&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=60" alt="热干面" class="w-12 h-12 object-cover rounded-lg">
+                        
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-medium">热干面</h3>
+                                <span class="text-xs text-gray-500">5天前</span>
+                            </div>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs text-gray-600">湖北省·武汉</span>
+                                <span class="footprint-category food-tag ml-2" style="font-size: 9px; padding: 0px 4px;">主食</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon">
+                    <i class="fas fa-shoe-prints text-[#D83931] text-3xl"></i>
+                </div>
+                <h3 class="font-medium mb-2">暂无足迹记录</h3>
+                <p class="text-sm text-gray-500 mb-4">探索特产并查看详情页，系统会自动记录您的足迹哦</p>
+                <a href="map-specialty.html" class="px-4 py-2 bg-[#D83931] text-white rounded-full text-sm">
+                    开始探索特产
+                </a>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        // 初始化视图切换
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有标签和视图元素
+            const tabs = document.querySelectorAll('.tab');
+            const views = document.querySelectorAll('.list-view, .timeline-view, .map-view');
+            
+            // 为每个标签绑定点击事件
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 获取目标视图
+                    const targetView = this.getAttribute('data-view');
+                    
+                    // 移除所有标签的激活状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // 为当前标签添加激活状态
+                    this.classList.add('active');
+                    
+                    // 隐藏所有视图
+                    views.forEach(view => {
+                        view.classList.remove('active-view');
+                    });
+                    
+                    // 显示目标视图
+                    document.querySelector(`.${targetView}-view`).classList.add('active-view');
+                });
+            });
+            
+            // 绑定分类按钮点击事件
+            const categoryButtons = document.querySelectorAll('.list-category-btn');
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的激活状态
+                    categoryButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // 为当前按钮添加激活状态
+                    this.classList.add('active');
+                    
+                    // 获取分类代码
+                    const categoryCode = this.getAttribute('data-category');
+                    
+                    // 调用筛选函数
+                    filterFootprints(categoryCode);
+                });
+            });
+            
+            // 检查是否有足迹记录
+            checkEmptyState();
+        });
+        
+        // 更新分类数据映射
+        const categoryMapping = {
+            "all": { name: "全部", color: "#D83931", icon: "fa-th-large" },
+            "food": { name: "主食", color: "#F7C873", icon: "fa-bowl-rice" },
+            "material": { name: "副食", color: "#9B59B6", icon: "fa-jar" },
+            "snack": { name: "小吃", color: "#58D68D", icon: "fa-cookie" },
+            "dessert": { name: "零食", color: "#E74C3C", icon: "fa-candy-bar" },
+            "alcohol": { name: "烟酒", color: "#7F8C8D", icon: "fa-wine-bottle" },
+            "tea": { name: "茶叶", color: "#1ABC9C", icon: "fa-mug-hot" },
+            "drink": { name: "饮料", color: "#3498DB", icon: "fa-glass" },
+            "fruit": { name: "水果", color: "#2ECC71", icon: "fa-apple-whole" },
+            "vegetable": { name: "蔬菜", color: "#16A085", icon: "fa-carrot" },
+            "seafood": { name: "水产海鲜", color: "#0E6EAE", icon: "fa-fish" },
+            "craft": { name: "工艺品", color: "#8E44AD", icon: "fa-scissors" },
+            "medicine": { name: "药材", color: "#D35400", icon: "fa-mortar-pestle" },
+            "flower": { name: "花卉", color: "#27AE60", icon: "fa-seedling" }
+        };
+        
+        // 筛选足迹的函数
+        function filterFootprints(categoryCode) {
+            // 获取所有足迹项
+            const footprintItems = document.querySelectorAll('.footprint-item');
+            
+            // 如果选择"全部"则显示所有足迹
+            if (categoryCode === 'all') {
+                footprintItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+                // 更新空状态
+                checkEmptyStateAfterFilter();
+                return;
+            }
+            
+            // 获取分类信息
+            const category = categoryMapping[categoryCode]?.name || categoryCode;
+            
+            // 否则根据分类筛选
+            let hasVisibleItems = false;
+            
+            footprintItems.forEach(item => {
+                // 获取分类标签
+                const categoryTag = item.querySelector('.footprint-category');
+                if (!categoryTag) return;
+                
+                const itemCategory = categoryTag.textContent.trim();
+                
+                if (itemCategory === category) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 检查筛选后是否没有显示的项目
+            if (!hasVisibleItems) {
+                // 显示"没有找到"的提示
+                showFilterEmptyState(category);
+            } else {
+                // 隐藏空状态
+                hideEmptyState();
+            }
+        }
+        
+        // 显示筛选后的空状态
+        function showFilterEmptyState(category) {
+            const emptyState = document.getElementById('emptyState');
+            if (!emptyState) return;
+            
+            // 更新空状态的提示文本
+            const emptyTitle = emptyState.querySelector('h3');
+            const emptyDesc = emptyState.querySelector('p');
+            
+            if (emptyTitle) {
+                emptyTitle.textContent = `没有找到${category}类足迹`;
+            }
+            
+            if (emptyDesc) {
+                emptyDesc.textContent = `您暂时没有浏览过${category}类特产，可以继续探索发现更多`;
+            }
+            
+            // 显示空状态，隐藏视图
+            document.querySelector('.list-view').classList.add('hidden');
+            document.querySelector('.timeline-view').classList.add('hidden');
+            document.querySelector('.map-view').classList.add('hidden');
+            emptyState.classList.remove('hidden');
+        }
+        
+        // 隐藏空状态
+        function hideEmptyState() {
+            const emptyState = document.getElementById('emptyState');
+            if (!emptyState) return;
+            
+            emptyState.classList.add('hidden');
+            
+            // 根据当前选中的视图类型显示对应视图
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab) {
+                const targetView = activeTab.getAttribute('data-view');
+                document.querySelector(`.${targetView}-view`).classList.add('active-view');
+            } else {
+                document.querySelector('.list-view').classList.add('active-view');
+            }
+        }
+        
+        // 筛选后检查是否显示空状态
+        function checkEmptyStateAfterFilter() {
+            const visibleItems = document.querySelectorAll('.footprint-item[style="display: block;"]');
+            
+            if (visibleItems.length === 0) {
+                // 显示通用空状态
+                const emptyState = document.getElementById('emptyState');
+                if (!emptyState) return;
+                
+                // 重置空状态文本
+                const emptyTitle = emptyState.querySelector('h3');
+                const emptyDesc = emptyState.querySelector('p');
+                
+                if (emptyTitle) {
+                    emptyTitle.textContent = "暂无足迹记录";
+                }
+                
+                if (emptyDesc) {
+                    emptyDesc.textContent = "探索特产并查看详情页，系统会自动记录您的足迹哦";
+                }
+                
+                // 隐藏所有视图
+                document.querySelector('.list-view').classList.add('hidden');
+                document.querySelector('.timeline-view').classList.add('hidden');
+                document.querySelector('.map-view').classList.add('hidden');
+                
+                // 显示空状态
+                emptyState.classList.remove('hidden');
+            } else {
+                // 隐藏空状态
+                hideEmptyState();
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 个人中心</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .profile-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            object-fit: cover;
+        }
+        
+        .stat-border {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .achievement-badge {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .divider {
+            height: 8px;
+            background-color: #F0ECE6;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #F0ECE6;
+        }
+        
+        .menu-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 顶部个人信息 -->
+            <div class="profile-gradient pt-10 pb-6 px-4 rounded-b-[24px]">
+                <!-- 设置和消息按钮 -->
+                <div class="flex justify-end mb-2">
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full bg-white bg-opacity-20">
+                        <i class="fas fa-gear text-white text-sm"></i>
+                    </button>
+                </div>
+                
+                <!-- 用户资料 -->
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8cG9ydHJhaXR8fHx8fHwxNjQ5NTQyODUz&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="用户头像" class="avatar">
+                    
+                    <div class="ml-4">
+                        <h1 class="text-white text-lg font-bold">寻味探索者</h1>
+                        <div class="flex items-center mt-1">
+                            <span class="text-white text-opacity-90 text-xs mr-3">ID: 20240501</span>
+                            <div class="flex items-center px-2 py-1 bg-white bg-opacity-20 rounded-full">
+                                <i class="fas fa-map-marker-alt text-white text-opacity-90 text-xs mr-1"></i>
+                                <span class="text-white text-opacity-90 text-xs">北京</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据统计 -->
+                <div class="flex justify-around mt-6 bg-white bg-opacity-10 rounded-lg py-3">
+                    <a href="collections.html" class="flex flex-col items-center">
+                        <span class="text-white font-medium">26</span>
+                        <span class="text-white text-opacity-80 text-xs mt-1">收藏</span>
+                    </a>
+                    
+                    <div class="stat-border"></div>
+                    
+                    <a href="footprints.html" class="flex flex-col items-center">
+                        <span class="text-white font-medium">48</span>
+                        <span class="text-white text-opacity-80 text-xs mt-1">足迹</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 成就展示 -->
+            <!-- 这部分将被完全移除 -->
+
+            <!-- 我的足迹 -->
+            <div class="mx-4 mt-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-base font-bold">我的足迹</h2>
+                    <a href="footprints.html" class="text-sm text-gray-500 flex items-center">
+                        查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i>
+                    </a>
+                </div>
+                
+                <div class="flex overflow-x-auto hide-scrollbar pb-2">
+                    <a href="footprints.html" class="card mr-3 w-40 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="郫县豆瓣" class="w-full h-24 object-cover rounded-t-xl">
+                        <div class="p-2">
+                            <h3 class="text-sm font-medium">郫县豆瓣酱</h3>
+                            <div class="text-xs text-gray-500 mt-1">今天 10:30</div>
+                        </div>
+                    </a>
+                    
+                    <a href="footprints.html" class="card mr-3 w-40 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="苏州刺绣" class="w-full h-24 object-cover rounded-t-xl">
+                        <div class="p-2">
+                            <h3 class="text-sm font-medium">苏州刺绣</h3>
+                            <div class="text-xs text-gray-500 mt-1">昨天 16:45</div>
+                        </div>
+                    </a>
+                    
+                    <a href="footprints.html" class="card w-40 flex-shrink-0">
+                        <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="西湖龙井" class="w-full h-24 object-cover rounded-t-xl">
+                        <div class="p-2">
+                            <h3 class="text-sm font-medium">西湖龙井</h3>
+                            <div class="text-xs text-gray-500 mt-1">3天前</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 功能区 -->
+            <div class="divider mt-6"></div>
+            
+            <div class="bg-white">
+                <div class="menu-item">
+                    <div class="menu-icon bg-red-50">
+                        <i class="fas fa-heart text-[#D83931]"></i>
+                    </div>
+                    <a href="collections.html" class="flex-1">我的收藏</a>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                
+                <!-- 特产旅行清单菜单项被移除 -->
+                
+                <!-- 我的成就菜单项被移除 -->
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="bg-white mb-5">
+                <div class="menu-item">
+                    <div class="menu-icon bg-blue-50">
+                        <i class="fas fa-headset text-blue-500"></i>
+                    </div>
+                    <span class="flex-1">在线客服</span>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon bg-orange-50">
+                        <i class="fas fa-lightbulb text-orange-500"></i>
+                    </div>
+                    <span class="flex-1">信息纠错</span>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-icon bg-gray-50">
+                        <i class="fas fa-circle-info text-gray-500"></i>
+                    </div>
+                    <a href="abount.html" class="flex-1">关于我们</a>
+                    <i class="fas fa-chevron-right text-gray-300"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部标签栏 (固定在底部) -->
+        <div class="bg-white border-t border-gray-200 w-full">
+            <div class="flex justify-around items-center px-4 py-1.5">
+                <a href="index.html" class="flex flex-col items-center">
+                    <i class="fas fa-home text-gray-500"></i>
+                    <span class="text-xs mt-1 text-gray-500">首页</span>
+                </a>
+                
+                <a href="map-specialty.html" class="flex flex-col items-center">
+                    <i class="fas fa-compass text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">地图</span>
+                </a>
+
+                <a href="ranking.html" class="flex flex-col items-center">
+                    <i class="fas fa-trophy text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">榜单</span>
+                </a>
+                
+                <a href="profile.html" class="flex flex-col items-center">
+                    <i class="fas fa-user text-[#D83931]"></i>
+                    <span class="text-xs mt-1 text-[#D83931] font-medium">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

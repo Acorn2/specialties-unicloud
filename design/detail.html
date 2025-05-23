@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 特产详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .detail-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tag {
+            border-radius: 10px;
+            font-size: 10px;
+            padding: 1px 6px;
+        }
+        
+        .food-tag {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .craft-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .fresh-tag {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .festival-tag {
+            background-color: #E74C3C;
+            color: white;
+        }
+        
+        .geo-tag {
+            background-color: #2980B9;
+            color: white;
+        }
+        
+        .heritage-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .image-gallery::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        .gallery-image {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            border-radius: 0;
+        }
+        
+        .gallery-indicator {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .indicator-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 0 3px;
+        }
+        
+        .indicator-dot.active {
+            background-color: white;
+            width: 8px;
+            height: 8px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 6px;
+            color: #D83931;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: rgba(216, 57, 49, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon i {
+            color: #D83931;
+            font-size: 14px;
+        }
+        
+        .location-map {
+            width: 100%;
+            height: 180px;
+            background-color: #e9e9e9;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .location-marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            background-color: rgba(216, 57, 49, 0.9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .location-marker::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid rgba(216, 57, 49, 0.9);
+        }
+        
+        .share-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 10;
+        }
+        
+        .related-item {
+            width: 120px;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+        
+        .related-image {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .related-title {
+            font-size: 12px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .related-location {
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <div class="detail-gradient pt-10 pb-3 px-4">
+            <div class="flex items-center">
+                <a href="javascript:history.back()" class="text-white">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white ml-4 flex-1">特产详情</h1>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 图片轮播 -->
+            <div class="relative">
+                <div class="image-gallery" id="imageGallery">
+                    <!-- 图片将通过JavaScript动态加载 -->
+                    <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=480&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=720" alt="特产图片" class="gallery-image">
+                </div>
+                
+                <div class="gallery-indicator" id="galleryIndicator">
+                    <div class="indicator-dot active"></div>
+                </div>
+                
+                <button class="share-button">
+                    <i class="fas fa-share-alt text-gray-600"></i>
+                </button>
+            </div>
+            
+            <!-- 特产基本信息 -->
+            <div class="p-4">
+                <h1 class="text-xl font-bold mb-2" id="specialtyName">特产名称</h1>
+                
+                <div class="flex items-center mb-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-map-marker-alt text-red-500 text-xs mr-1"></i>
+                        <span class="text-sm text-gray-600" id="specialtyLocation">所在地区</span>
+                    </div>
+                    <div class="flex items-center ml-4">
+                        <i class="fas fa-eye text-gray-400 text-xs mr-1"></i>
+                        <span class="text-sm text-gray-500" id="viewCount">浏览量</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap mb-4" id="tagContainer">
+                    <!-- 标签将通过JavaScript动态加载 -->
+                </div>
+                
+                <div class="text-sm text-gray-700 leading-relaxed mb-4" id="specialtyDescription">
+                    特产描述加载中...
+                </div>
+            </div>
+            
+            <!-- 基本信息 -->
+            <div class="p-4 bg-white mb-3">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>基本信息
+                </h2>
+                
+                <div id="basicInfoContainer">
+                    <!-- 基本信息内容将通过JavaScript动态加载 -->
+                </div>
+            </div>
+            
+            <!-- 产地位置 -->
+            <div class="p-4 bg-white mb-3">
+                <h2 class="section-title">
+                    <i class="fas fa-map-marked-alt"></i>产地位置
+                </h2>
+                
+                <div class="location-map" id="locationMap">
+                    <div class="location-marker">
+                        <i class="fas fa-map-pin"></i>
+                    </div>
+                </div>
+                
+                <div class="mt-3 text-sm text-gray-700" id="locationDetail">
+                    地理位置加载中...
+                </div>
+            </div>
+            
+            <!-- 相关特产 -->
+            <div class="p-4 bg-white mb-5">
+                <h2 class="section-title">
+                    <i class="fas fa-th-large"></i>相关特产
+                </h2>
+                
+                <div class="flex overflow-x-auto pb-2" id="relatedContainer">
+                    <!-- 相关特产将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部标签栏 (固定在底部) -->
+        <div class="bg-white border-t border-gray-200 w-full">
+            <div class="flex justify-around items-center px-4 py-1.5">
+                <a href="index.html" class="flex flex-col items-center">
+                    <i class="fas fa-home text-gray-500"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">首页</span>
+                </a>
+                
+                <a href="map-specialty.html" class="flex flex-col items-center">
+                    <i class="fas fa-compass text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">地图</span>
+                </a>
+                
+                <a href="ranking.html" class="flex flex-col items-center">
+                    <i class="fas fa-trophy text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">榜单</span>
+                </a>
+                
+                <a href="profile.html" class="flex flex-col items-center">
+                    <i class="fas fa-user text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 分类数据映射 - 修改为使用中文分类名称作为键
+    const categoryMapping = {
+        "全部": { name: "全部", color: "#D83931", icon: "fa-th-large" },
+        "主食": { name: "主食", color: "#F7C873", icon: "fa-bowl-rice" },
+        "副食": { name: "副食", color: "#9B59B6", icon: "fa-jar" },
+        "小吃": { name: "小吃", color: "#58D68D", icon: "fa-cookie" },
+        "零食": { name: "零食", color: "#E74C3C", icon: "fa-candy-bar" },
+        "烟酒": { name: "烟酒", color: "#7F8C8D", icon: "fa-wine-bottle" },
+        "茶叶": { name: "茶叶", color: "#1ABC9C", icon: "fa-mug-hot" },
+        "饮料": { name: "饮料", color: "#3498DB", icon: "fa-glass" },
+        "水果": { name: "水果", color: "#2ECC71", icon: "fa-apple-whole" },
+        "蔬菜": { name: "蔬菜", color: "#16A085", icon: "fa-carrot" },
+        "水产海鲜": { name: "水产海鲜", color: "#0E6EAE", icon: "fa-fish" },
+        "工艺品": { name: "工艺品", color: "#8E44AD", icon: "fa-scissors" },
+        "药材": { name: "药材", color: "#D35400", icon: "fa-mortar-pestle" },
+        "花卉": { name: "花卉", color: "#27AE60", icon: "fa-seedling" },
+        "生鲜": { name: "生鲜", color: "#58D68D", icon: "fa-leaf" }
+    };
+
+    // 特产数据 - 删除 categoryCode 字段
+    const specialtyData = {
+        "anhui001": {
+            id: "anhui001",
+            name: "桐城百花蜜",
+            province: "安徽",
+            category: "副食",
+            description: "桐城百花蜜是安徽桐城市的特色农产品，呈白色，黏稠流体状，口感鲜美，甜而不腻。据相关机构检测，桐城百花蜜含果糖和葡萄糖74.1g/100g，淀粉酶活性16ml/(g∙h)，羟甲基糠醛1.9mg/kg。需要注意的是，桐城百花蜜的保存，一定要置于阴凉干燥处，密封防潮，否则存储时间不长，容易变质。",
+            image: "https://images.unsplash.com/photo-1587049352851-8d4e89133924?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=480&ixid=MnwxfDB8MXxyYW5kb218MHx8aG9uZXl8fHx8fHwxNjQ5NTM5NjYx&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=720",
+            images: [
+                "https://images.unsplash.com/photo-1587049352851-8d4e89133924?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=480&ixid=MnwxfDB8MXxyYW5kb218MHx8aG9uZXl8fHx8fHwxNjQ5NTM5NjYx&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=720"
+            ],
+            location: {
+                lng: 116.936588,
+                lat: 31.035476,
+                address: "安徽省桐城市"
+            },
+            viewCount: "8.5万",
+            honors: ["全国名特优新农产品"],
+            tags: [],
+            content: "1、蜂蜜直接含服或泡水，水温60度左右。\n2、蜂蜜冲牛奶，豆浆，柠檬水等果汁饮品食用。\n3、蜂蜜涂抹面包、馒头等直接食用。\n安徽省安庆市桐城市嬉子湖镇、孔城镇、大关镇、范岗镇等。\n安徽省桐城市地处江淮要冲，丘岗地居多，属亚热带湿润气候区，气候温和，雨量充沛，光照充足，四季分明，土壤肥沃，pH值5-6.5，年平均温度16.15℃，无霜期长达243天，年太阳辐射总量为113.7卡/平方米，年日照数1993.8小时，全年平均雨量为1200mm左右，光、热、水条件优越，植被条件好。\n春季有油菜、紫云英、果树花，夏秋有洋槐、乌桕、山花等，蜜源植物丰富，非常适合定地养蜂。",
+            info: "呈白色，黏稠流体状，口感鲜美，甜而不腻的特色蜂蜜",
+            longitude: 116.936588,
+            latitude: 31.035476,
+            related: ["anhui002", "anhui003", "anhui004"]
+        }
+    };
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取桐城百花蜜数据
+        const specialty = specialtyData["anhui001"];
+        
+        // 设置页面内容
+        document.getElementById('specialtyName').textContent = specialty.name;
+        document.getElementById('specialtyLocation').textContent = specialty.province + 
+            (specialty.location && specialty.location.address ? ' ' + specialty.location.address.replace(/^安徽省/, '') : '');
+        document.getElementById('viewCount').textContent = specialty.viewCount;
+        document.getElementById('specialtyDescription').textContent = specialty.description;
+        
+        // 加载图片轮播
+        loadImageGallery(specialty.images);
+        
+        // 加载标签
+        loadTags(specialty);
+        
+        // 加载基本信息
+        loadBasicInfo(specialty);
+        
+        // 加载详细描述（而不是使用方法）
+        loadContentDetail(specialty.content, "详细描述", "fa-info-circle");
+        
+        // 加载位置信息
+        loadLocationInfo(specialty.location);
+        
+        // 加载相关特产
+        loadRelatedSpecialties(specialty.related);
+    });
+
+    // 加载图片轮播
+    function loadImageGallery(images) {
+        const galleryContainer = document.getElementById('imageGallery');
+        const indicatorContainer = document.getElementById('galleryIndicator');
+        
+        // 清空容器
+        galleryContainer.innerHTML = '';
+        indicatorContainer.innerHTML = '';
+        
+        // 如果没有图片，使用默认图片
+        if (!images || images.length === 0) {
+            images = ["https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=480&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=720"];
+        }
+        
+        // 添加图片
+        images.forEach((image, index) => {
+            // 创建图片元素
+            const imgElement = document.createElement('img');
+            imgElement.src = image;
+            imgElement.alt = `特产图片 ${index + 1}`;
+            imgElement.className = 'gallery-image';
+            galleryContainer.appendChild(imgElement);
+            
+            // 创建指示器
+            const dotElement = document.createElement('div');
+            dotElement.className = `indicator-dot ${index === 0 ? 'active' : ''}`;
+            indicatorContainer.appendChild(dotElement);
+        });
+        
+        // 如果只有一张图片，隐藏指示器
+        if (images.length <= 1) {
+            indicatorContainer.style.display = 'none';
+        }
+    }
+
+    // 加载标签 - 修改为使用 category 字段
+    function loadTags(specialty) {
+        const tagContainer = document.getElementById('tagContainer');
+        tagContainer.innerHTML = '';
+        
+        // 添加分类标签
+        const categoryInfo = categoryMapping[specialty.category] || { name: specialty.category, color: '#999', icon: 'fa-circle' };
+        const categoryTag = document.createElement('span');
+        categoryTag.className = 'tag mr-2 mb-1';
+        categoryTag.style.backgroundColor = categoryInfo.color;
+        categoryTag.style.color = specialty.category === '主食' ? '#8B5000' : 'white';
+        categoryTag.innerHTML = `<i class="fas ${categoryInfo.icon} mr-1"></i>${categoryInfo.name || specialty.category}`;
+        tagContainer.appendChild(categoryTag);
+        
+        // 添加荣誉标签
+        if (specialty.honors && specialty.honors.length > 0) {
+            specialty.honors.forEach(honor => {
+                const honorTag = document.createElement('span');
+                honorTag.className = 'tag heritage-tag mr-2 mb-1';
+                honorTag.innerHTML = `<i class="fas fa-award mr-1"></i>${honor}`;
+                tagContainer.appendChild(honorTag);
+            });
+        }
+        
+        // 添加自定义标签
+        if (specialty.tags && specialty.tags.length > 0) {
+            specialty.tags.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'tag geo-tag mr-2 mb-1';
+                tagElement.innerHTML = `<i class="fas fa-tag mr-1"></i>${tag}`;
+                tagContainer.appendChild(tagElement);
+            });
+        }
+    }
+
+    // 加载基本信息
+    function loadBasicInfo(specialty) {
+        const basicInfoContainer = document.getElementById('basicInfoContainer');
+        basicInfoContainer.innerHTML = '';
+        
+        // 创建分类信息
+        if (specialty.category) {
+            const categoryItem = createInfoItem('fa-tag', '分类', specialty.category);
+            basicInfoContainer.appendChild(categoryItem);
+        }
+        
+        // 创建产地信息
+        const locationText = specialty.address || `${specialty.province}${specialty.location && specialty.location.address ? ' ' + specialty.location.address.replace(/^安徽省/, '') : ''}`;
+        if (locationText) {
+            const locationItem = createInfoItem('fa-map-marker-alt', '产地', locationText);
+            basicInfoContainer.appendChild(locationItem);
+        }
+        
+        // 创建荣誉信息
+        if (specialty.honors && specialty.honors.length > 0) {
+            const honorsItem = createInfoItem('fa-award', '荣誉', specialty.honors.join('、'));
+            basicInfoContainer.appendChild(honorsItem);
+        }
+        
+        // 如果有标签信息
+        if (specialty.tags && specialty.tags.length > 0) {
+            const tagsItem = createInfoItem('fa-tags', '标签', specialty.tags.join('、'));
+            basicInfoContainer.appendChild(tagsItem);
+        }
+        
+        // 如果没有任何信息
+        if (basicInfoContainer.children.length === 0) {
+            basicInfoContainer.innerHTML = '<p class="text-sm text-gray-500">暂无基本信息</p>';
+        }
+    }
+
+    // 创建信息项目
+    function createInfoItem(iconClass, label, value) {
+        const item = document.createElement('div');
+        item.className = 'feature-item';
+        
+        item.innerHTML = `
+            <div class="feature-icon">
+                <i class="fas ${iconClass}"></i>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500">${label}</div>
+                <div class="text-sm">${value}</div>
+            </div>
+        `;
+        
+        return item;
+    }
+
+    // 加载详细描述
+    function loadContentDetail(content, title = "详细描述", iconClass = "fa-info-circle") {
+        // 检查是否已经存在详细描述部分，如果不存在则添加
+        let contentSection = document.getElementById('contentSection');
+        if (!contentSection) {
+            // 在基本信息和产地位置之间插入详细描述部分
+            const basicInfoSection = document.querySelector('.p-4.bg-white.mb-3');
+            contentSection = document.createElement('div');
+            contentSection.id = 'contentSection';
+            contentSection.className = 'p-4 bg-white mb-3';
+            contentSection.innerHTML = `
+                <h2 class="section-title">
+                    <i class="fas ${iconClass}"></i>${title}
+                </h2>
+                <div class="text-sm text-gray-700 leading-relaxed" id="contentDetail">
+                    <!-- 内容将通过JavaScript动态加载 -->
+                </div>
+            `;
+            basicInfoSection.parentNode.insertBefore(contentSection, basicInfoSection.nextSibling);
+        } else {
+            // 更新标题和图标
+            const titleElement = contentSection.querySelector('.section-title');
+            titleElement.innerHTML = `<i class="fas ${iconClass}"></i>${title}`;
+        }
+        
+        const contentDetail = document.getElementById('contentDetail');
+        
+        if (!content) {
+            contentSection.style.display = 'none';
+            return;
+        }
+        
+        contentSection.style.display = 'block';
+        
+        // 将内容中的换行符转换为HTML换行
+        contentDetail.innerHTML = content.replace(/\n/g, '<br>');
+    }
+
+    // 加载位置信息
+    function loadLocationInfo(location) {
+        const locationDetail = document.getElementById('locationDetail');
+        
+        // 如果没有位置信息，显示提示信息
+        if (!location || (!location.address && !location.lng && !location.lat)) {
+            locationDetail.textContent = '暂无详细位置信息';
+            return;
+        }
+        
+        // 更新位置信息
+        locationDetail.textContent = location.address || '';
+        
+        // 使用高德地图API加载地图
+        if (location.lng && location.lat) {
+            // 清空地图容器
+            const locationMapContainer = document.getElementById('locationMap');
+            locationMapContainer.innerHTML = '';
+            
+            // 添加地图容器
+            const mapDiv = document.createElement('div');
+            mapDiv.id = 'amap-container';
+            mapDiv.style.width = '100%';
+            mapDiv.style.height = '100%';
+            locationMapContainer.appendChild(mapDiv);
+            
+            // 添加高德地图脚本
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://webapi.amap.com/maps?v=2.0&key=01683ea78abef3395c2b3e4a73c6f6c3&callback=initAMap';
+            document.body.appendChild(script);
+            
+            // 初始化地图的回调函数
+            window.initAMap = function() {
+                // 创建地图实例
+                const map = new AMap.Map('amap-container', {
+                    zoom: 13,
+                    center: [location.lng, location.lat],
+                    resizeEnable: true
+                });
+                
+                // 创建标记
+                const marker = new AMap.Marker({
+                    position: new AMap.LngLat(location.lng, location.lat),
+                    title: specialtyData["anhui001"].name,
+                    icon: new AMap.Icon({
+                        size: new AMap.Size(36, 36),
+                        image: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png',
+                        imageSize: new AMap.Size(36, 36)
+                    })
+                });
+                
+                // 将标记添加到地图
+                map.add(marker);
+                
+                // 添加信息窗体
+                const infoWindow = new AMap.InfoWindow({
+                    content: `<div style="padding: 8px 0;">
+                                <h4 style="margin: 0 0 5px; font-size: 14px;">${specialtyData["anhui001"].name}</h4>
+                                <p style="margin: 0; font-size: 12px; color: #666;">${location.address}</p>
+                             </div>`,
+                    offset: new AMap.Pixel(0, -30)
+                });
+                
+                // 点击标记时打开信息窗体
+                marker.on('click', function() {
+                    infoWindow.open(map, marker.getPosition());
+                });
+                
+                // 添加控件
+                map.addControl(new AMap.Scale());
+                
+                // 地图加载完成后，自动触发一次点击，显示信息窗体
+                map.on('complete', function() {
+                    infoWindow.open(map, marker.getPosition());
+                });
+            };
+        }
+    }
+
+    // 加载相关特产
+    function loadRelatedSpecialties(relatedIds) {
+        const relatedContainer = document.getElementById('relatedContainer');
+        relatedContainer.innerHTML = '';
+        
+        // 如果没有相关特产，显示提示信息
+        if (!relatedIds || relatedIds.length === 0) {
+            relatedContainer.innerHTML = '<p class="text-sm text-gray-500 w-full text-center py-4">暂无相关特产推荐</p>';
+            return;
+        }
+        
+        // 添加相关特产
+        relatedIds.forEach(id => {
+            const specialty = specialtyData[id];
+            if (!specialty) return;
+            
+            const relatedItem = document.createElement('a');
+            relatedItem.href = `detail.html?id=${id}`;
+            relatedItem.className = 'related-item';
+            
+            relatedItem.innerHTML = `
+                <img src="${specialty.image}" alt="${specialty.name}" class="related-image">
+                <div class="related-title">${specialty.name}</div>
+                <div class="related-location">${specialty.province}·${specialty.location && specialty.location.address ? specialty.location.address.replace(/^安徽省/, '') : ''}</div>
+            `;
+            
+            relatedContainer.appendChild(relatedItem);
+        });
+        
+        // 如果没有找到任何相关特产，显示提示信息
+        if (relatedContainer.children.length === 0) {
+            relatedContainer.innerHTML = '<p class="text-sm text-gray-500 w-full text-center py-4">暂无相关特产推荐</p>';
+        }
+    }
+    </script>
+</body>
+</html>

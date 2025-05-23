@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 我的收藏</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .collection-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .item-category {
+            display: inline-block;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-right: 6px;
+        }
+        
+        .food-tag {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .craft-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .fresh-tag {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .drink-tag {
+            background-color: #3498DB;
+            color: white;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            background-color: rgba(216, 57, 49, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .filter-container {
+            padding: 0 16px 12px 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .filter-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: #F0ECE6;
+            color: #666;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tag.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .collection-item {
+            position: relative;
+        }
+        
+        .collection-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .view-mode-toggle {
+            background-color: white;
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            width: 80px;
+            margin-left: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .view-mode-btn {
+            flex: 1;
+            text-align: center;
+            padding: 2px 0;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .view-mode-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .grid-view-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 16px;
+        }
+        
+        .grid-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .grid-item img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+        
+        .grid-info {
+            padding: 8px;
+            background-color: white;
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 添加分类样式，参考map-specialty.html */
+        .category-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn.active {
+            background-color: #F0ECE6;
+        }
+        
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        
+        .category-btn span {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .category-btn.active span {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .list-category-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            background-color: #F0ECE6;
+            color: #666666;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .list-category-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        /* 全部类别的按钮特殊样式 */
+        .list-category-btn[data-category="all"] {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .list-category-btn[data-category="all"].active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .categories-scroll {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .categories-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* 添加模态框样式 */
+        .category-icon-lg {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        
+        .category-modal-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .category-modal-btn.active {
+            background-color: #F0ECE6;
+        }
+        
+        .category-modal-btn span {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <div class="collection-gradient pt-10 pb-3 px-4">
+            <div class="flex items-center">
+                <a href="profile.html" class="text-white">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white ml-4 flex-1">我的收藏</h1>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 筛选标签 -->
+            <div class="p-4 pb-2">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-base font-medium">特产分类</h2>
+                    
+                    <div class="view-mode-toggle flex-shrink-0">
+                        <div class="view-mode-btn active" data-view="list">列表</div>
+                        <div class="view-mode-btn" data-view="grid">网格</div>
+                    </div>
+                </div>
+                
+                <!-- 标签式分类列表 -->
+                <div class="flex flex-wrap">
+                    <button class="list-category-btn active" data-category="all">全部</button>
+                    <button class="list-category-btn" data-category="food">主食</button>
+                    <button class="list-category-btn" data-category="material">副食</button>
+                    <button class="list-category-btn" data-category="snack">小吃</button>
+                    <button class="list-category-btn" data-category="dessert">零食</button>
+                    <button class="list-category-btn" data-category="alcohol">烟酒</button>
+                    <button class="list-category-btn" data-category="tea">茶叶</button>
+                    <button class="list-category-btn" data-category="drink">饮料</button>
+                    <button class="list-category-btn" data-category="fruit">水果</button>
+                    <button class="list-category-btn" data-category="vegetable">蔬菜</button>
+                    <button class="list-category-btn" data-category="seafood">水产海鲜</button>
+                    <button class="list-category-btn" data-category="craft">工艺品</button>
+                    <button class="list-category-btn" data-category="medicine">药材</button>
+                    <button class="list-category-btn" data-category="flower">花卉</button>
+                </div>
+            </div>
+            
+            <!-- 列表视图 -->
+            <div id="listView" class="px-4 pb-4">
+                <!-- 列表项目 -->
+                <div class="collection-item card mb-4">
+                    <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="郫县豆瓣酱" class="w-full h-36 object-cover rounded-t-xl">
+                    
+                    <div class="collection-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-share-alt text-gray-600"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">郫县豆瓣酱</h3>
+                            <span class="text-xs text-gray-500">四川省·成都</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="item-category food-tag">副食</span>
+                        </div>
+                        <p class="text-xs text-gray-600">四川郫县特产，色泽红亮，香辣浓郁，被誉为川菜的灵魂。</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">
+                                <i class="fas fa-eye mr-1"></i> 3.2万
+                            </span>
+                            <button class="text-xs text-[#D83931] bg-red-50 px-3 py-1 rounded-full">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collection-item card mb-4">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="苏州刺绣" class="w-full h-36 object-cover rounded-t-xl">
+                    
+                    <div class="collection-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-share-alt text-gray-600"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">苏州刺绣</h3>
+                            <span class="text-xs text-gray-500">江苏省·苏州</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="item-category craft-tag">工艺品</span>
+                        </div>
+                        <p class="text-xs text-gray-600">中国四大名绣之一，以绣工精细、针法严谨、色彩典雅著称。</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">
+                                <i class="fas fa-eye mr-1"></i> 2.8万
+                            </span>
+                            <button class="text-xs text-[#D83931] bg-red-50 px-3 py-1 rounded-full">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collection-item card mb-4">
+                    <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="西湖龙井" class="w-full h-36 object-cover rounded-t-xl">
+                    
+                    <div class="collection-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-share-alt text-gray-600"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">西湖龙井</h3>
+                            <span class="text-xs text-gray-500">浙江省·杭州</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="item-category drink-tag">茶饮</span>
+                        </div>
+                        <p class="text-xs text-gray-600">中国十大名茶之一，以色翠、香郁、味甘、形美四绝著称。</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">
+                                <i class="fas fa-eye mr-1"></i> 4.1万
+                            </span>
+                            <button class="text-xs text-[#D83931] bg-red-50 px-3 py-1 rounded-full">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="collection-item card mb-4">
+                    <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="热干面" class="w-full h-36 object-cover rounded-t-xl">
+                    
+                    <div class="collection-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-share-alt text-gray-600"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-3">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-medium">热干面</h3>
+                            <span class="text-xs text-gray-500">湖北省·武汉</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="item-category food-tag">主食</span>
+                        </div>
+                        <p class="text-xs text-gray-600">武汉名小吃，香、咸、辣、甜，回味悠长。</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-xs text-gray-500">
+                                <i class="fas fa-eye mr-1"></i> 5.6万
+                            </span>
+                            <button class="text-xs text-[#D83931] bg-red-50 px-3 py-1 rounded-full">
+                                查看详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 网格视图 -->
+            <div id="gridView" class="pb-4 hidden">
+                <div class="grid-view-container">
+                    <!-- 第一行 -->
+                    <a href="detail.html" class="grid-item">
+                        <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="郫县豆瓣酱">
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <div class="grid-info">
+                            <h3 class="text-sm font-medium mb-1">郫县豆瓣酱</h3>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">四川·成都</span>
+                                <span class="item-category food-tag text-[9px]">副食</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <a href="detail.html" class="grid-item">
+                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="苏州刺绣">
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <div class="grid-info">
+                            <h3 class="text-sm font-medium mb-1">苏州刺绣</h3>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">江苏·苏州</span>
+                                <span class="item-category craft-tag text-[9px]">工艺品</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- 第二行 -->
+                    <a href="detail.html" class="grid-item">
+                        <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="西湖龙井">
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <div class="grid-info">
+                            <h3 class="text-sm font-medium mb-1">西湖龙井</h3>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">浙江·杭州</span>
+                                <span class="item-category drink-tag text-[9px]">茶饮</span>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <a href="detail.html" class="grid-item">
+                        <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="热干面">
+                        <button class="favorite-btn">
+                            <i class="fas fa-heart text-[#D83931]"></i>
+                        </button>
+                        <div class="grid-info">
+                            <h3 class="text-sm font-medium mb-1">热干面</h3>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">湖北·武汉</span>
+                                <span class="item-category food-tag text-[9px]">主食</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 空状态 -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon">
+                    <i class="fas fa-heart text-[#D83931] text-3xl"></i>
+                </div>
+                <h3 class="font-medium mb-2">暂无收藏内容</h3>
+                <p class="text-sm text-gray-500 mb-4">您可以收藏喜欢的特产，方便以后查找</p>
+                <a href="map-specialty.html" class="px-4 py-2 bg-[#D83931] text-white rounded-full text-sm">
+                    去发现特产
+                </a>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        // 视图切换逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取视图切换按钮
+            const listViewBtn = document.querySelector('.view-mode-btn[data-view="list"]');
+            const gridViewBtn = document.querySelector('.view-mode-btn[data-view="grid"]');
+            
+            // 获取视图容器
+            const listView = document.getElementById('listView');
+            const gridView = document.getElementById('gridView');
+            
+            // 绑定列表视图切换事件
+            listViewBtn.addEventListener('click', function() {
+                // 更新按钮状态
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                
+                // 更新视图显示
+                listView.classList.remove('hidden');
+                gridView.classList.add('hidden');
+            });
+            
+            // 绑定网格视图切换事件
+            gridViewBtn.addEventListener('click', function() {
+                // 更新按钮状态
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                
+                // 更新视图显示
+                gridView.classList.remove('hidden');
+                listView.classList.add('hidden');
+            });
+            
+            // 移除原有分类按钮事件
+            // 绑定新的分类按钮点击事件
+            const categoryButtons = document.querySelectorAll('.list-category-btn');
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的激活状态
+                    categoryButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // 为当前按钮添加激活状态
+                    this.classList.add('active');
+                    
+                    // 获取分类代码
+                    const categoryCode = this.getAttribute('data-category');
+                    
+                    // 调用筛选函数
+                    filterCollectionsByCategory(categoryCode);
+                });
+            });
+            
+            // 绑定收藏按钮点击事件
+            const favoriteButtons = document.querySelectorAll('.action-btn:first-child, .favorite-btn');
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 切换收藏图标颜色（演示用，实际应与后端交互）
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('text-[#D83931]')) {
+                        icon.classList.remove('text-[#D83931]');
+                        icon.classList.add('text-gray-400');
+                    } else {
+                        icon.classList.remove('text-gray-400');
+                        icon.classList.add('text-[#D83931]');
+                    }
+                });
+            });
+            
+            // 检查集合是否为空
+            checkEmptyState();
+            
+            // 更新分类数据映射
+            const categoryMapping = {
+                "all": { name: "全部", color: "#D83931", icon: "fa-th-large" },
+                "food": { name: "主食", color: "#F7C873", icon: "fa-bowl-rice" },
+                "material": { name: "副食", color: "#9B59B6", icon: "fa-jar" },
+                "snack": { name: "小吃", color: "#58D68D", icon: "fa-cookie" },
+                "dessert": { name: "零食", color: "#E74C3C", icon: "fa-candy-bar" },
+                "alcohol": { name: "烟酒", color: "#7F8C8D", icon: "fa-wine-bottle" },
+                "tea": { name: "茶叶", color: "#1ABC9C", icon: "fa-mug-hot" },
+                "drink": { name: "饮料", color: "#3498DB", icon: "fa-glass" },
+                "fruit": { name: "水果", color: "#2ECC71", icon: "fa-apple-whole" },
+                "vegetable": { name: "蔬菜", color: "#16A085", icon: "fa-carrot" },
+                "seafood": { name: "水产海鲜", color: "#0E6EAE", icon: "fa-fish" },
+                "craft": { name: "工艺品", color: "#8E44AD", icon: "fa-scissors" },
+                "medicine": { name: "药材", color: "#D35400", icon: "fa-mortar-pestle" },
+                "flower": { name: "花卉", color: "#27AE60", icon: "fa-seedling" }
+            };
+        });
+        
+        // 修改筛选函数以使用分类代码
+        function filterCollectionsByCategory(categoryCode) {
+            const collections = document.querySelectorAll('.collection-item, .grid-item');
+            
+            // 如果是"全部"，显示所有项目
+            if (categoryCode === 'all') {
+                collections.forEach(item => {
+                    const displayItem = item.closest('.collection-item, .grid-item');
+                    if (displayItem) {
+                        displayItem.style.display = '';
+                    }
+                });
+                
+                // 更新空状态
+                checkEmptyStateAfterFilter();
+                return;
+            }
+            
+            // 获取分类信息
+            const category = categoryMapping[categoryCode]?.name || categoryCode;
+            
+            // 否则根据分类筛选
+            let hasVisibleItems = false;
+            
+            collections.forEach(item => {
+                // 获取分类标签
+                const categoryTag = item.querySelector('.item-category');
+                if (!categoryTag) return;
+                
+                const itemCategory = categoryTag.textContent.trim();
+                
+                // 找到父元素或当前元素，控制显示/隐藏
+                const displayItem = item.closest('.collection-item, .grid-item');
+                if (!displayItem) return;
+                
+                if (itemCategory === category) {
+                    displayItem.style.display = '';
+                    hasVisibleItems = true;
+                } else {
+                    displayItem.style.display = 'none';
+                }
+            });
+            
+            // 检查筛选后是否没有显示的项目
+            if (!hasVisibleItems) {
+                // 显示"没有找到"的提示
+                showFilterEmptyState(category);
+            } else {
+                // 隐藏空状态
+                hideEmptyState();
+            }
+        }
+        
+        // 显示筛选后的空状态
+        function showFilterEmptyState(category) {
+            const emptyState = document.getElementById('emptyState');
+            if (!emptyState) return;
+            
+            // 更新空状态的提示文本
+            const emptyTitle = emptyState.querySelector('h3');
+            const emptyDesc = emptyState.querySelector('p');
+            
+            if (emptyTitle) {
+                emptyTitle.textContent = `没有找到${category}类特产`;
+            }
+            
+            if (emptyDesc) {
+                emptyDesc.textContent = `您暂时没有收藏${category}类特产，可以继续浏览发现更多`;
+            }
+            
+            // 显示空状态，隐藏视图
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('gridView').classList.add('hidden');
+            emptyState.classList.remove('hidden');
+        }
+        
+        // 隐藏空状态
+        function hideEmptyState() {
+            const emptyState = document.getElementById('emptyState');
+            if (!emptyState) return;
+            
+            emptyState.classList.add('hidden');
+            
+            // 根据当前选中的视图类型显示对应视图
+            const listViewBtn = document.querySelector('.view-mode-btn[data-view="list"]');
+            if (listViewBtn.classList.contains('active')) {
+                document.getElementById('listView').classList.remove('hidden');
+            } else {
+                document.getElementById('gridView').classList.remove('hidden');
+            }
+        }
+        
+        // 检查集合是否为空
+        function checkEmptyState() {
+            const collectionItems = document.querySelectorAll('.collection-item, .grid-item');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (!emptyState) return;
+            
+            if (collectionItems.length === 0) {
+                // 隐藏所有视图
+                document.getElementById('listView').classList.add('hidden');
+                document.getElementById('gridView').classList.add('hidden');
+                
+                // 重置空状态文本
+                const emptyTitle = emptyState.querySelector('h3');
+                const emptyDesc = emptyState.querySelector('p');
+                
+                if (emptyTitle) {
+                    emptyTitle.textContent = "暂无收藏内容";
+                }
+                
+                if (emptyDesc) {
+                    emptyDesc.textContent = "您可以收藏喜欢的特产，方便以后查找";
+                }
+                
+                // 显示空状态
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+        
+        // 筛选后检查是否显示空状态
+        function checkEmptyStateAfterFilter() {
+            const visibleItems = document.querySelectorAll('.collection-item:not([style*="display: none"]), .grid-item:not([style*="display: none"])');
+            
+            if (visibleItems.length === 0) {
+                // 显示通用空状态
+                const emptyState = document.getElementById('emptyState');
+                if (!emptyState) return;
+                
+                // 重置空状态文本
+                const emptyTitle = emptyState.querySelector('h3');
+                const emptyDesc = emptyState.querySelector('p');
+                
+                if (emptyTitle) {
+                    emptyTitle.textContent = "没有找到匹配的特产";
+                }
+                
+                if (emptyDesc) {
+                    emptyDesc.textContent = "尝试更换筛选条件，或浏览更多特产";
+                }
+                
+                // 隐藏所有视图
+                document.getElementById('listView').classList.add('hidden');
+                document.getElementById('gridView').classList.add('hidden');
+                
+                // 显示空状态
+                emptyState.classList.remove('hidden');
+            } else {
+                // 隐藏空状态
+                hideEmptyState();
+            }
+        }
+    </script>
+</body>
+</html>

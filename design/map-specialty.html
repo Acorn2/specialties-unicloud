@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 特产地图</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .map-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .specialty-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .specialty-tag:active {
+            transform: scale(0.95);
+        }
+        
+        .specialty-tag i {
+            margin-right: 2px;
+        }
+        
+        .tag-food {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .tag-drink {
+            background-color: #1ABC9C;
+            color: white;
+        }
+        
+        .tag-fresh {
+            background-color: #3498DB;
+            color: white;
+        }
+        
+        .tag-snack {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .tag-festival {
+            background-color: #E74C3C;·
+            color: white;
+        }
+        
+        .tag-material {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .province-btn {
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .province-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .province-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        
+        #mapContainer {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+        }
+        
+        .specialty-marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #D83931;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 10;
+            border: 2px solid white;
+        }
+        
+        .specialty-marker:before {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #D83931;
+        }
+        
+        .specialty-popup {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            background: white;
+            border-radius: 8px;
+            padding: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            font-size: 10px;
+            z-index: 20;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .specialty-marker:hover .specialty-popup,
+        .specialty-marker:active .specialty-popup {
+            visibility: visible;
+            opacity: 1;
+            bottom: calc(100% + 6px);
+        }
+        
+        .specialty-popup-image {
+            width: 100%;
+            height: 60px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-bottom: 4px;
+        }
+        
+        .specialty-popup-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .specialty-popup-tags {
+            display: flex;
+            margin-bottom: 2px;
+        }
+        
+        .popup-tag {
+            font-size: 8px;
+            padding: 1px 3px;
+            border-radius: 4px;
+            margin-right: 2px;
+        }
+        
+        /* 新增样式 */
+        .filter-pill {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: #F0ECE6;
+            color: #666666;
+            white-space: nowrap;
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-pill.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .province-btn {
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .province-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .province-grid-btn {
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 13px;
+            background-color: #F0ECE6;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        
+        .province-grid-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .category-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 4px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .category-btn.active {
+            background-color: #F0ECE6;
+        }
+        
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        
+        .category-icon-lg {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        
+        .category-btn span {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .category-btn.active span {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .list-category-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            background-color: #F0ECE6;
+            color: #666666;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .list-category-btn.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .category-modal-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .category-modal-btn.active {
+            background-color: #F0ECE6;
+        }
+        
+        .category-modal-btn span {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部标题栏 -->
+        <div class="map-gradient pt-10 pb-4 px-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="text-white">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white">特产地图</h1>
+                <div class="w-5"></div> <!-- 用于保持标题居中的空元素 -->
+            </div>
+        </div>
+        
+        <!-- 省份选择栏 -->
+        <div class="bg-white border-b border-gray-100">
+            <!-- 区域选择标签 -->
+            <div class="px-4 pt-3 pb-2">
+                <div class="flex overflow-x-auto hide-scrollbar pb-1">
+                    <div class="filter-pill">华东</div>
+                    <div class="filter-pill">华南</div>
+                    <div class="filter-pill active">华中</div>
+                    <div class="filter-pill">华北</div>
+                    <div class="filter-pill">西南</div>
+                    <!-- 东北和西北放入"更多区域"的弹出菜单中 -->
+                    <div class="filter-pill" id="moreRegions">
+                        <i class="fas fa-ellipsis mr-1"></i>更多
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 省份选择器 -->
+            <div class="p-3 border-t border-gray-100">
+                <div class="flex justify-between mb-2">
+                    <span class="text-xs text-gray-500">当前省份</span>
+                    <button class="text-xs text-[#D83931] flex items-center" id="openProvinceModal">
+                        查看全部省份 <i class="fas fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <div class="flex whitespace-nowrap py-1" style="min-width: 100%">
+                        <button class="province-btn active">湖北</button>
+                        <button class="province-btn">四川</button>
+                        <button class="province-btn">广东</button>
+                        <button class="province-btn">浙江</button>
+                        <button class="province-btn">江苏</button>
+                        <button class="province-btn">山东</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 省份选择模态框 (默认隐藏) -->
+        <div id="provinceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center hidden">
+            <div class="bg-white rounded-t-2xl w-full max-w-md max-h-[70vh] overflow-y-auto">
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold">选择省份</h3>
+                        <button id="closeProvinceModal" class="p-1">
+                            <i class="fas fa-times text-gray-500"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 区域分组的省份列表 -->
+                <div class="p-4">
+                    <!-- 华东地区 -->
+                    <div class="mb-4">
+                        <h4 class="text-sm text-gray-500 mb-2">华东</h4>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="province-grid-btn">上海</button>
+                            <button class="province-grid-btn">江苏</button>
+                            <button class="province-grid-btn">浙江</button>
+                            <button class="province-grid-btn">安徽</button>
+                            <button class="province-grid-btn">福建</button>
+                            <button class="province-grid-btn">江西</button>
+                            <button class="province-grid-btn">山东</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 华南地区 -->
+                    <div class="mb-4">
+                        <h4 class="text-sm text-gray-500 mb-2">华南</h4>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="province-grid-btn">广东</button>
+                            <button class="province-grid-btn">广西</button>
+                            <button class="province-grid-btn">海南</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 更多区域省份... -->
+                    <div class="mb-4">
+                        <h4 class="text-sm text-gray-500 mb-2">华中</h4>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="province-grid-btn active">湖北</button>
+                            <button class="province-grid-btn">湖南</button>
+                            <button class="province-grid-btn">河南</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 更多区域弹出菜单 (默认隐藏) -->
+        <div id="regionDropdown" class="hidden absolute z-20 mt-2 bg-white rounded-lg shadow-lg py-2 px-1">
+            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-lg" data-region="东北">东北</button>
+            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-lg" data-region="西北">西北</button>
+            <button class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-lg" data-region="港澳台">港澳台</button>
+        </div>
+        
+        <!-- 特产分类选择方案 -->
+        <div class="bg-white mb-3">
+            <div class="px-4 pt-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-sm font-medium">特产分类</h3>
+                    <button class="text-xs text-[#D83931]" id="toggleCategoryView">
+                        <span id="viewTypeText">列表视图</span> <i class="fas fa-bars ml-1"></i>
+                    </button>
+                </div>
+                
+                <!-- 网格视图 (默认显示) -->
+                <div id="gridView" class="mb-3">
+                    <!-- 常用分类 -->
+                    <div class="grid grid-cols-5 gap-2 mb-2">
+                        <button class="category-btn active" data-category="all">
+                            <div class="category-icon" style="background-color: rgba(216, 57, 49, 0.1);">
+                                <i class="fas fa-th-large text-[#D83931]"></i>
+                            </div>
+                            <span>全部</span>
+                        </button>
+                        
+                        <button class="category-btn" data-category="food">
+                            <div class="category-icon" style="background-color: rgba(247, 200, 115, 0.1);">
+                                <i class="fas fa-bowl-rice text-[#F7C873]"></i>
+                            </div>
+                            <span>主食</span>
+                        </button>
+                        
+                        <button class="category-btn" data-category="snack">
+                            <div class="category-icon" style="background-color: rgba(88, 214, 141, 0.1);">
+                                <i class="fas fa-cookie text-[#58D68D]"></i>
+                            </div>
+                            <span>小吃</span>
+                        </button>
+                        
+                        <button class="category-btn" data-category="dessert">
+                            <div class="category-icon" style="background-color: rgba(231, 76, 60, 0.1);">
+                                <i class="fas fa-candy-bar text-[#E74C3C]"></i>
+                            </div>
+                            <span>零食</span>
+                        </button>
+                        
+                        <button class="category-btn" id="moreCategories">
+                            <div class="category-icon" style="background-color: rgba(149, 165, 166, 0.1);">
+                                <i class="fas fa-ellipsis text-gray-500"></i>
+                            </div>
+                            <span>更多</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 列表视图 (默认隐藏) -->
+                <div id="listView" class="mb-3 hidden">
+                    <div class="flex flex-wrap">
+                        <button class="list-category-btn active" data-category="all">全部</button>
+                        <button class="list-category-btn" data-category="food">主食</button>
+                        <button class="list-category-btn" data-category="material">副食</button>
+                        <button class="list-category-btn" data-category="snack">小吃</button>
+                        <button class="list-category-btn" data-category="dessert">零食</button>
+                        <button class="list-category-btn" data-category="alcohol">烟酒</button>
+                        <button class="list-category-btn" data-category="tea">茶叶</button>
+                        <button class="list-category-btn" data-category="drink">饮料</button>
+                        <button class="list-category-btn" data-category="fruit">水果</button>
+                        <button class="list-category-btn" data-category="vegetable">蔬菜</button>
+                        <button class="list-category-btn" data-category="seafood">水产海鲜</button>
+                        <button class="list-category-btn" data-category="craft">工艺品</button>
+                        <button class="list-category-btn" data-category="medicine">药材</button>
+                        <button class="list-category-btn" data-category="flower">花卉</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 更多分类模态框 (默认隐藏) -->
+        <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center hidden">
+            <div class="bg-white rounded-t-2xl w-full max-w-md">
+                <div class="p-4 border-b border-gray-100">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold">全部分类</h3>
+                        <button id="closeCategoryModal" class="p-1">
+                            <i class="fas fa-times text-gray-500"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-4 grid grid-cols-4 gap-3">
+                    <button class="category-modal-btn active" data-category="all">
+                        <div class="category-icon-lg" style="background-color: rgba(216, 57, 49, 0.1);">
+                            <i class="fas fa-th-large text-[#D83931]"></i>
+                        </div>
+                        <span>全部</span>
+                    </button>
+                    
+                    <button class="category-modal-btn" data-category="food">
+                        <div class="category-icon-lg" style="background-color: rgba(247, 200, 115, 0.1);">
+                            <i class="fas fa-bowl-rice text-[#F7C873]"></i>
+                        </div>
+                        <span>主食</span>
+                    </button>
+                    
+                    <button class="category-modal-btn" data-category="material">
+                        <div class="category-icon-lg" style="background-color: rgba(155, 89, 182, 0.1);">
+                            <i class="fas fa-jar text-[#9B59B6]"></i>
+                        </div>
+                        <span>副食</span>
+                    </button>
+                    
+                    <!-- 所有其他分类 -->
+                    <button class="category-modal-btn" data-category="snack">
+                        <div class="category-icon-lg" style="background-color: rgba(88, 214, 141, 0.1);">
+                            <i class="fas fa-cookie text-[#58D68D]"></i>
+                        </div>
+                        <span>小吃</span>
+                    </button>
+                    
+                    <!-- 更多分类按钮... -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="scrollable-content">
+            <!-- 中国地图 - 替换为 ECharts 地图 -->
+            <div class="map-container mb-4">
+                <div id="mapContainer" class="w-full h-full"></div>
+            </div>
+            
+            <!-- 当前省份特产列表 -->
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-base font-bold">湖北省特产</h2>
+                    <span class="text-xs text-gray-500">共12种特产</span>
+                </div>
+                
+                <div class="space-y-3 mb-4" id="specialty-list">
+                    <!-- 特产列表项会在 JavaScript 中动态生成 -->
+                </div>
+                
+                <!-- 加载更多 -->
+                <div class="text-center">
+                    <button class="text-sm text-gray-600 px-4 py-2 rounded-full border border-gray-200">
+                        加载更多特产 <i class="fas fa-chevron-down ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部标签栏 (固定在底部) -->
+        <div class="bg-white border-t border-gray-200 w-full">
+            <div class="flex justify-around items-center px-4 py-1.5">
+                <a href="index.html" class="flex flex-col items-center">
+                    <i class="fas fa-home text-gray-500"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">首页</span>
+                </a>
+                
+                <a href="map-specialty.html" class="flex flex-col items-center">
+                    <i class="fas fa-compass text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">地图</span>
+                </a>
+
+                <a href="ranking.html" class="flex flex-col items-center">
+                    <i class="fas fa-trophy text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">榜单</span>
+                </a>
+                
+                <a href="profile.html" class="flex flex-col items-center">
+                    <i class="fas fa-user text-gray-500 text-lg"></i>
+                    <span class="text-xs mt-0.5 text-gray-500">我的</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 特产数据保留，并添加湖北省特产数据
+    const specialtyData = {
+        // 全国特产数据
+        "china": [
+            {
+                id: "gd001",
+                name: "沙糖桔",
+                province: "广东",
+                city: "江门",
+                category: "生鲜类",
+                description: "皮薄汁多、甜酸适口，富含维生素C",
+                image: "https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 113.081901, // 经度
+                    lat: 22.578738  // 纬度
+                },
+                categoryCode: "fresh"
+            },
+            // 其他全国特产...
+        ],
+        
+        // 广东省特产数据
+        "guangdong": [
+            {
+                id: "gd001",
+                name: "沙糖桔",
+                province: "广东",
+                city: "江门",
+                category: "生鲜类",
+                description: "皮薄汁多、甜酸适口，富含维生素C",
+                image: "https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 113.081901,
+                    lat: 22.578738
+                },
+                categoryCode: "fresh"
+            },
+            {
+                id: "gd002",
+                name: "新会陈皮",
+                province: "广东",
+                city: "江门",
+                category: "副食类",
+                description: "药食两用，具有理气健脾、燥湿化痰功效",
+                image: "https://images.unsplash.com/photo-1590301157890-4810ed352733?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 113.022739,
+                    lat: 22.458450
+                },
+                categoryCode: "material"
+            },
+            // 添加更多数据点
+            {
+                id: "gd004",
+                name: "梅州客家酿豆腐",
+                province: "广东",
+                city: "梅州",
+                category: "主食类",
+                description: "外酥里嫩，香味四溢",
+                image: "https://images.unsplash.com/photo-1569058242272-4b99c5f3174a?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 116.122673,
+                    lat: 24.288442
+                },
+                categoryCode: "food",
+                is_popular: true
+            },
+            {
+                id: "gd005",
+                name: "潮州工夫茶",
+                province: "广东",
+                city: "潮州",
+                category: "饮品类",
+                description: "色香味俱全，茶艺精湛",
+                image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 116.632301,
+                    lat: 23.661812
+                },
+                categoryCode: "drink"
+            },
+            // 更多广东特产...
+        ],
+        
+        // 四川省特产数据
+        "sichuan": [
+            {
+                id: "sc001",
+                name: "郫县豆瓣酱",
+                province: "四川",
+                city: "成都",
+                category: "副食类",
+                description: "四川郫县特产，色泽红亮，香辣浓郁，被誉为川菜的灵魂",
+                image: "https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 103.899169,
+                    lat: 30.810239
+                },
+                categoryCode: "material"
+            },
+            // 更多四川特产...
+        ],
+        
+        // 其他省份...
+        
+        // 湖北省特产数据
+        "hubei": [
+            {
+                id: "hb001",
+                name: "武昌鱼",
+                province: "湖北",
+                city: "武汉",
+                category: "主食类",
+                description: "肉质鲜嫩，营养丰富，蛋白质含量高",
+                image: "https://images.unsplash.com/photo-1534766471485-18e1e52bee8c?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 114.305458,
+                    lat: 30.592788
+                },
+                categoryCode: "food"
+            },
+            {
+                id: "hb002",
+                name: "热干面",
+                province: "湖北",
+                city: "武汉",
+                category: "主食类",
+                description: "武汉名小吃，香、咸、辣、甜，回味悠长",
+                image: "https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 114.280938,
+                    lat: 30.589361
+                },
+                categoryCode: "food"
+            },
+            {
+                id: "hb003",
+                name: "鄂州莲藕",
+                province: "湖北",
+                city: "鄂州",
+                category: "生鲜类",
+                description: "肉质细嫩，色白如玉，风味独特",
+                image: "https://images.unsplash.com/photo-1544467468-9ad659372f66?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 114.894902,
+                    lat: 30.384439
+                },
+                categoryCode: "fresh"
+            },
+            {
+                id: "hb004",
+                name: "宜昌柑橘",
+                province: "湖北",
+                city: "宜昌",
+                category: "生鲜类",
+                description: "色泽金黄，汁多味甜，果肉细嫩",
+                image: "https://images.unsplash.com/photo-1591183137550-fd9c8ff4a485?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 111.286958,
+                    lat: 30.691967
+                },
+                categoryCode: "fresh"
+            },
+            {
+                id: "hb005",
+                name: "十堰太极泉酒",
+                province: "湖北",
+                city: "十堰",
+                category: "饮品类",
+                description: "清澈透明，醇厚爽口，回味悠长",
+                image: "https://images.unsplash.com/photo-1584225064785-c62a8b43d148?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 110.787969,
+                    lat: 32.649294
+                },
+                categoryCode: "drink"
+            },
+            {
+                id: "hb006",
+                name: "恩施玉露茶",
+                province: "湖北",
+                city: "恩施",
+                category: "饮品类",
+                description: "清香持久，滋味醇厚，叶底嫩绿",
+                image: "https://images.unsplash.com/photo-1582542734256-c0d3fea2500b?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=90&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=90",
+                location: {
+                    lng: 109.486862,
+                    lat: 30.272156
+                },
+                categoryCode: "drink"
+            }
+        ],
+    };
+
+    // 分类数据映射
+    const categoryMapping = {
+        "all": { name: "全部", color: "#D83931", icon: "fa-th-large" },
+        "food": { name: "主食", color: "#F7C873", icon: "fa-bowl-rice" },
+        "material": { name: "副食", color: "#9B59B6", icon: "fa-jar" },
+        "snack": { name: "小吃", color: "#58D68D", icon: "fa-cookie" },
+        "dessert": { name: "零食", color: "#E74C3C", icon: "fa-candy-bar" },
+        "alcohol": { name: "烟酒", color: "#7F8C8D", icon: "fa-wine-bottle" },
+        "tea": { name: "茶叶", color: "#1ABC9C", icon: "fa-mug-hot" },
+        "drink": { name: "饮料", color: "#3498DB", icon: "fa-glass" },
+        "fruit": { name: "水果", color: "#2ECC71", icon: "fa-apple-whole" },
+        "vegetable": { name: "蔬菜", color: "#16A085", icon: "fa-carrot" },
+        "seafood": { name: "水产海鲜", color: "#0E6EAE", icon: "fa-fish" },
+        "craft": { name: "工艺品", color: "#8E44AD", icon: "fa-scissors" },
+        "medicine": { name: "药材", color: "#D35400", icon: "fa-mortar-pestle" },
+        "flower": { name: "花卉", color: "#27AE60", icon: "fa-seedling" }
+    };
+
+    // 省份数据映射更新，添加湖北省
+    const provinceMapping = {
+        "guangdong": { name: "广东", code: "粤", center: [113.280637, 23.125178] },
+        "hubei": { name: "湖北", code: "鄂", center: [114.298572, 30.584355] },
+        "sichuan": { name: "四川", code: "川", center: [104.065735, 30.659462] },
+        "zhejiang": { name: "浙江", code: "浙", center: [120.153576, 30.287459] },
+        // 其他省份...
+    };
+
+    // 全局变量
+    let myChart = null;
+    let currentMapName = 'hubei';  // 当前地图名称，默认为湖北
+    let currentProvince = "hubei"; // 默认加载湖北省
+    let currentCategory = "all";   // 当前选中的分类
+    let specialtyMarkers = [];     // 特产标记点
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            console.log("开始初始化地图...");
+            
+            // 从URL参数获取省份
+            const urlParams = new URLSearchParams(window.location.search);
+            const provinceParam = urlParams.get('province');
+            
+            // 如果URL中有省份参数，更新当前省份
+            if (provinceParam && specialtyData[provinceParam]) {
+                currentProvince = provinceParam;
+                console.log(`从URL参数加载省份: ${provinceParam}`);
+            }
+            
+            // 使用 ECharts 初始化地图
+            initEChartsMap();
+            
+            // 绑定省份按钮事件
+            bindProvinceButtons();
+            
+            // 更新UI以反映当前省份
+            updateProvinceUI(currentProvince);
+            
+            // 绑定分类按钮事件
+            bindCategoryButtons();
+            
+            // 绑定区域选择事件
+            bindRegionFilter();
+            
+            // 绑定视图切换事件
+            bindViewToggle();
+            
+            // 绑定模态框事件
+            bindModalEvents();
+            
+            console.log("地图初始化完成");
+        } catch (error) {
+            console.error("地图初始化失败:", error);
+            showMapError("初始化地图失败: " + error.message);
+        }
+    });
+
+    // 初始化 ECharts 地图
+    function initEChartsMap() {
+        try {
+            // 如果已存在实例但被销毁，重新创建
+            if (myChart && myChart.isDisposed()) {
+                myChart = null;
+            }
+            
+            // 如果实例不存在，创建新实例
+            if (!myChart) {
+                myChart = echarts.init(document.getElementById('mapContainer'));
+            }
+            
+            // 加载湖北省地图数据
+            loadProvinceMap(currentProvince);
+        } catch (error) {
+            console.error("初始化地图失败:", error);
+            showMapError("初始化地图失败: " + error.message);
+        }
+    }
+    
+    // 加载省份地图数据
+    function loadProvinceMap(province) {
+        // 检查地图是否已加载
+        if (myChart && myChart.isDisposed()) {
+            console.log("ECharts 实例已被销毁，重新初始化");
+            myChart = echarts.init(document.getElementById('mapContainer'));
+        }
+        
+        // 省份代码到地图编码的映射
+        const provinceToMapCode = {
+            "hubei": "420000",
+            "guangdong": "440000",
+            "sichuan": "510000",
+            "zhejiang": "330000",
+            "jiangsu": "320000", 
+            "shandong": "370000",
+            "yunnan": "530000",
+            "guizhou": "520000",
+            "fujian": "350000",
+            "hunan": "430000",
+            "henan": "410000",
+            "beijing": "110000",
+            "tianjin": "120000",
+            "hebei": "130000",
+            "shanxi": "140000",
+            "neimenggu": "150000",
+            "chongqing": "500000",
+            "xizang": "540000",
+            "liaoning": "210000",
+            "jilin": "220000",
+            "heilongjiang": "230000",
+            "shaanxi": "610000",
+            "gansu": "620000",
+            "qinghai": "630000",
+            "ningxia": "640000",
+            "xinjiang": "650000",
+            "shanghai": "310000",
+            "anhui": "340000",
+            "jiangxi": "360000",
+            "guangxi": "450000",
+            "hainan": "460000"
+        };
+        
+        // 获取省份编码，如果没有找到则默认使用湖北省编码
+        const mapCode = provinceToMapCode[province] || "420000";
+        
+        // 更新当前地图名称和省份
+        currentMapName = mapCode;
+        currentProvince = province;
+        
+        console.log(`加载省份地图: ${province}, 地图编码: ${mapCode}`);
+        
+        // 加载地图数据
+        fetch(`https://geo.datav.aliyun.com/areas_v3/bound/${mapCode}_full.json`)
+            .then(response => response.json())
+            .then(geoJsonData => {
+                // 注册地图
+                echarts.registerMap(mapCode, geoJsonData);
+                
+                // 确保 renderMap 完成后再加载特产
+                renderMap(mapCode, parseInt(mapCode))
+                    .then(() => {
+                        // 加载特产数据
+                        loadSpecialties(currentProvince, currentCategory);
+                    })
+                    .catch(error => {
+                        console.error(`地图渲染或特产加载过程中发生错误:`, error);
+                        showMapError(`地图渲染失败，无法加载特产`);
+                    });
+            })
+            .catch(error => {
+                console.error(`加载${provinceMapping[province]?.name || '省份'}地图数据失败:`, error);
+                showMapError(`加载${provinceMapping[province]?.name || '省份'}地图失败`);
+            });
+    }
+    
+    // 渲染地图 - 修改为返回 Promise
+    function renderMap(mapName, pid) {
+        return new Promise((resolve, reject) => {
+            try {
+                // 获取省份名称
+                let provinceName = provinceMapping[currentProvince]?.name || '湖北省';
+                
+                console.log(`渲染地图: ${mapName}, 省份: ${provinceName}`);
+                
+                // 配置项
+                const option = {
+                    backgroundColor: '#fff',
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function(params) {
+                            if (params.componentType === 'markPoint') {
+                                // 特产标记点
+                                const specialty = params.data.specialty;
+                                return `<div style="padding: 5px;">
+                                    <div style="font-weight: bold; margin-bottom: 5px;">${specialty.name}</div>
+                                    <div>所在地: ${specialty.city}</div>
+                                    <div>类别: ${specialty.category}</div>
+                                    <div style="margin-top: 5px; font-size: 12px;">${specialty.description}</div>
+                                </div>`;
+                            } else {
+                                // 地图区域
+                                return params.name;
+                            }
+                        },
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+                        padding: 10,
+                        textStyle: {
+                            color: '#333'
+                        }
+                    },
+                    visualMap: {
+                        type: 'continuous',
+                        left: 'right',
+                        min: 0,
+                        max: 1000,
+                        text: ['高', '低'],
+                        inRange: {
+                            color: ['#e0f7fa', '#80deea', '#4dd0e1', '#26c6da', '#00bcd4', '#00acc1']
+                        },
+                        calculable: true,
+                        show: false
+                    },
+                    series: [
+                        {
+                            name: `${provinceName}特产`,
+                            type: 'map',
+                            map: mapName,
+                            roam: true, // 允许缩放和拖动
+                            zoom: 1.2,  // 初始缩放比例
+                            selectedMode: false,
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    fontSize: 14,
+                                    fontWeight: 'bold'
+                                },
+                                itemStyle: {
+                                    areaColor: '#ffc107'
+                                }
+                            },
+                            data: [],  // 数据将由后续请求获取
+                            itemStyle: {
+                                areaColor: '#dde6f3',
+                                borderColor: '#8abce2',
+                                borderWidth: 0.5
+                            },
+                            label: {
+                                show: true,
+                                fontSize: 12
+                            }
+                        }
+                    ]
+                };
+                
+                // 设置地图
+                myChart.setOption(option, true);
+                console.log("地图基础配置已设置");
+                
+                // 加载行政区数据
+                fetch(`https://geo.datav.aliyun.com/areas_v3/bound/${pid}.json`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 获取子区域
+                        const features = data.features || [];
+                        const mapData = features.map(feature => {
+                            const properties = feature.properties || {};
+                            return {
+                                name: properties.name,
+                                value: Math.random() * 1000, // 随机数据，用于颜色区分
+                                id: properties.adcode
+                            };
+                        });
+                        
+                        // 更新数据
+                        myChart.setOption({
+                            series: [{
+                                data: mapData
+                            }]
+                        });
+                        
+                        // 绑定地图区域点击事件
+                        myChart.off('click');
+                        myChart.on('click', function(params) {
+                            // 只处理地图区域的点击
+                            if (params.componentType === 'series' && params.seriesType === 'map' && !params.componentSubType) {
+                                console.log("点击地图区域:", params.name);
+                                
+                                // 查找点击的区域数据
+                                const clickedRegion = mapData.find(item => item.name === params.name);
+                                
+                                if (clickedRegion) {
+                                    // 过滤该城市的特产
+                                    filterSpecialtiesByCity(params.name);
+                                }
+                            }
+                        });
+                        
+                        resolve();
+                    })
+                    .catch(error => {
+                        console.error(`加载行政区数据失败: ${error.message}`);
+                        showMapError('加载行政区数据失败');
+                        reject(error);
+                    });
+            } catch (error) {
+                console.error(`渲染地图过程中发生错误: ${error.message}`);
+                reject(error);
+            }
+        });
+    }
+    
+    // 显示地图错误信息
+    function showMapError(message) {
+        document.getElementById('mapContainer').innerHTML = `
+            <div style="text-align:center; padding:50px; color:red;">
+                <h3>${message}</h3>
+                <button onclick="window.location.reload()" style="margin-top:20px; padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">刷新页面</button>
+            </div>
+        `;
+    }
+    
+    // 加载特产数据
+    function loadSpecialties(province, category = "all") {
+        // 更新当前选中省份和分类
+        currentProvince = province;
+        currentCategory = category;
+        
+        // 获取特产数据
+        let data = specialtyData[province] || [];
+        
+        // 如果有分类筛选，过滤数据
+        if (category !== "all") {
+            data = data.filter(item => item.categoryCode === category);
+        }
+        
+        // 更新特产列表
+        updateSpecialtyList(data);
+        
+        // 添加特产标记
+        addSpecialtyMarkers(data);
+    }
+    
+    // 添加特产标记 - 完全重写
+    function addSpecialtyMarkers(data) {
+        try {
+            if (!myChart) {
+                console.error("添加特产标记失败: myChart 实例不存在");
+                return;
+            }
+            
+            if (data.length === 0) {
+                console.warn("特产数据为空，没有标记点需要添加");
+                return;
+            }
+            
+            console.log("开始添加特产标记, 共", data.length, "个特产");
+            
+            // 创建散点数据 - 确保使用兼容的坐标格式
+            const markPoints = [];
+            
+            data.forEach(specialty => {
+                // 获取分类信息
+                const categoryInfo = categoryMapping[specialty.categoryCode] || { color: '#D83931', icon: 'fa-circle' };
+                
+                // 位置信息有效性检查
+                if (!specialty.location || typeof specialty.location.lng !== 'number' || typeof specialty.location.lat !== 'number') {
+                    console.error("特产位置数据无效:", specialty.name, specialty.location);
+                    return;
+                }
+                
+                // 使用自定义标记
+                markPoints.push({
+                    name: specialty.name,
+                    coord: [specialty.location.lng, specialty.location.lat],
+                    value: 100,
+                    specialty: specialty,
+                    itemStyle: {
+                        color: categoryInfo.color
+                    }
+                });
+                
+                console.log(`添加特产标记[${specialty.name}]，位置:[${specialty.location.lng}, ${specialty.location.lat}]`);
+            });
+            
+            console.log("特产标记数据准备完成，共", markPoints.length, "个有效标记点");
+            
+            // 直接在原有地图上添加标记点，使用 markPoint 组件
+            const markPointOption = {
+                series: [{
+                    name: '湖北特产',
+                    type: 'map',
+                    map: '420000',
+                    markPoint: {
+                        symbol: 'pin',
+                        symbolSize: 30,
+                        itemStyle: {
+                            color: function(params) {
+                                return params.data.itemStyle?.color || '#D83931';
+                            }
+                        },
+                        label: {
+                            formatter: '{b}',
+                            position: 'right',
+                            distance: 5,
+                            fontSize: 10,
+                            color: '#000'
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                borderColor: '#fff',
+                                borderWidth: 2
+                            }
+                        },
+                        data: markPoints
+                    }
+                }]
+            };
+            
+            // 添加标记点到地图上，将第二个参数改为 true 以合并配置
+            myChart.setOption(markPointOption, true);
+            console.log("特产标记点已添加到地图");
+            
+            // 为标记点添加点击事件
+            myChart.on('click', {seriesName: '湖北特产', seriesType: 'map'}, function(params) {
+                if (params.componentType === 'markPoint') {
+                    const specialty = params.data.specialty;
+                    console.log("点击特产标记:", specialty.name);
+                    highlightSpecialty(specialty);
+                }
+            });
+            
+        } catch (error) {
+            console.error("添加特产标记失败:", error);
+            console.error("错误堆栈:", error.stack);
+        }
+    }
+    
+    // 高亮显示特产
+    function highlightSpecialty(specialty) {
+        // 跳转到详情页
+        window.location.href = `detail.html?id=${specialty.id}`;
+    }
+    
+    // 筛选特定城市的特产
+    function filterSpecialtiesByCity(cityName) {
+        // 获取当前省份的所有特产
+        const allSpecialties = specialtyData[currentProvince] || [];
+        
+        // 筛选当前城市的特产
+        const citySpecialties = allSpecialties.filter(item => 
+            item.city === cityName || 
+            cityName.includes(item.city) || 
+            item.city.includes(cityName)
+        );
+        
+        // 更新列表
+        updateSpecialtyList(citySpecialties);
+        
+        // 更新标题
+        document.querySelector('.text-base.font-bold').textContent = `${cityName}特产`;
+        document.querySelector('.text-xs.text-gray-500').textContent = `共${citySpecialties.length}种特产`;
+    }
+
+    // 更新特产列表
+    function updateSpecialtyList(data) {
+        const listContainer = document.getElementById('specialty-list');
+        const provinceName = provinceMapping[currentProvince]?.name || '湖北省';
+        
+        // 更新标题
+        document.querySelector('.text-base.font-bold').textContent = `${provinceName}特产`;
+        document.querySelector('.text-xs.text-gray-500').textContent = `共${data.length}种特产`;
+        
+        // 清空列表
+        listContainer.innerHTML = '';
+        
+        // 添加特产项
+        data.forEach(item => {
+            const categoryInfo = categoryMapping[item.categoryCode] || { color: '#999', icon: 'fa-circle' };
+            
+            listContainer.innerHTML += `
+                <a href="detail.html?id=${item.id}" class="card p-3 flex items-start block">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+                    <div class="ml-3 flex-1">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-medium text-sm">${item.name}</h3>
+                            <span class="text-xs text-gray-500">${item.city}</span>
+                        </div>
+                        <div class="flex flex-wrap mt-1">
+                            <span class="specialty-tag" style="background-color: ${categoryInfo.color}; color: ${item.categoryCode === 'food' ? '#8B5000' : 'white'};">
+                                <i class="fas ${categoryInfo.icon}"></i>${categoryInfo.name || item.category}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">${item.description}</p>
+                    </div>
+                </a>
+            `;
+        });
+    }
+    
+    // 绑定省份按钮点击事件
+    function bindProvinceButtons() {
+        const buttons = document.querySelectorAll('.province-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                buttons.forEach(b => b.classList.remove('active'));
+                
+                // 添加当前按钮的active类
+                this.classList.add('active');
+                
+                // 获取省份代码
+                const province = this.textContent === '全国' ? 'china' : 
+                                this.textContent === '更多' ? 'china' : 
+                                this.textContent === '湖北' ? 'hubei' :
+                                this.textContent === '广东' ? 'guangdong' :
+                                this.textContent === '四川' ? 'sichuan' :
+                                this.textContent === '浙江' ? 'zhejiang' :
+                                this.textContent.toLowerCase();
+                
+                // 加载省份地图
+                if (province !== currentProvince) {
+                    loadProvinceMap(province);
+                }
+            });
+        });
+    }
+
+    // 绑定分类按钮点击事件
+    function bindCategoryButtons() {
+        const buttons = document.querySelectorAll('.card.py-2.px-3');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 高亮当前按钮
+                buttons.forEach(b => b.classList.remove('bg-[#F0ECE6]'));
+                this.classList.add('bg-[#F0ECE6]');
+                
+                // 获取分类代码
+                const categoryText = this.querySelector('span').textContent;
+                let categoryCode = 'all';
+                
+                Object.entries(categoryMapping).forEach(([code, info]) => {
+                    if (info.name === categoryText) {
+                        categoryCode = code;
+                    }
+                });
+                
+                // 加载筛选后的特产数据
+                loadSpecialties(currentProvince, categoryCode);
+            });
+        });
+    }
+
+    // 绑定区域选择事件
+    function bindRegionFilter() {
+        const regionPills = document.querySelectorAll('.filter-pill');
+        regionPills.forEach(pill => {
+            // 跳过"更多"按钮
+            if (pill.id === 'moreRegions') {
+                // 为"更多"按钮添加特殊处理
+                pill.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    const dropdown = document.getElementById('regionDropdown');
+                    
+                    // 设置下拉菜单位置
+                    dropdown.style.left = `${this.offsetLeft}px`;
+                    dropdown.style.top = `${this.offsetTop + this.offsetHeight}px`;
+                    
+                    // 显示/隐藏下拉菜单
+                    dropdown.classList.toggle('hidden');
+                });
+                
+                return;
+            }
+            
+            pill.addEventListener('click', function() {
+                // 隐藏下拉菜单(如果显示)
+                document.getElementById('regionDropdown').classList.add('hidden');
+                
+                // 移除所有激活状态
+                regionPills.forEach(p => p.classList.remove('active'));
+                
+                // 添加当前激活状态
+                this.classList.add('active');
+                
+                // 根据不同区域加载相应省份
+                const region = this.textContent.trim();
+                console.log(`切换到区域: ${region}`);
+                
+                // 根据区域筛选省份按钮
+                filterProvincesByRegion(region);
+            });
+        });
+        
+        // 绑定下拉菜单项点击事件
+        const dropdownItems = document.querySelectorAll('#regionDropdown button');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const region = this.getAttribute('data-region');
+                
+                // 隐藏下拉菜单
+                document.getElementById('regionDropdown').classList.add('hidden');
+                
+                // 移除所有激活状态
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                
+                // 将region显示在"更多"按钮上
+                const moreButton = document.getElementById('moreRegions');
+                moreButton.innerHTML = `<i class="fas fa-check mr-1"></i>${region}`;
+                moreButton.classList.add('active');
+                
+                // 根据区域筛选省份
+                filterProvincesByRegion(region);
+            });
+        });
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#moreRegions') && !e.target.closest('#regionDropdown')) {
+                document.getElementById('regionDropdown').classList.add('hidden');
+            }
+        });
+        
+        // 页面加载时默认选中华中
+        const defaultRegion = document.querySelector('.filter-pill.active').textContent.trim();
+        filterProvincesByRegion(defaultRegion);
+    }
+
+    // 根据区域筛选省份
+    function filterProvincesByRegion(region) {
+        // 区域-省份映射
+        const regionProvinceMap = {
+            "华东": ["上海", "江苏", "浙江", "安徽", "福建", "江西", "山东"],
+            "华南": ["广东", "广西", "海南"],
+            "华中": ["湖北", "湖南", "河南"],
+            "华北": ["北京", "天津", "河北", "山西", "内蒙古"],
+            "西南": ["重庆", "四川", "贵州", "云南", "西藏"],
+            "东北": ["辽宁", "吉林", "黑龙江"],
+            "西北": ["陕西", "甘肃", "青海", "宁夏", "新疆"],
+            "港澳台": ["香港", "澳门", "台湾"]
+        };
+        
+        // 获取区域对应的省份列表
+        const provinces = regionProvinceMap[region] || [];
+        
+        // 如果省份列表为空，直接返回
+        if (provinces.length === 0) {
+            console.error(`未找到区域: ${region} 的省份数据`);
+            return;
+        }
+        
+        // 获取省份按钮容器
+        const provinceContainer = document.querySelector('.province-btn').parentNode;
+        
+        // 清空现有按钮
+        provinceContainer.innerHTML = '';
+        
+        // 添加新省份按钮
+        provinces.forEach((province, index) => {
+            const button = document.createElement('button');
+            button.className = 'province-btn' + (index === 0 ? ' active' : '');
+            button.textContent = province;
+            provinceContainer.appendChild(button);
+            
+            // 绑定点击事件
+            button.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                document.querySelectorAll('.province-btn').forEach(b => b.classList.remove('active'));
+                
+                // 添加当前按钮的active类
+                this.classList.add('active');
+                
+                // 获取省份代码并加载地图
+                const provinceName = this.textContent;
+                const provinceCode = getProvinceCode(provinceName);
+                if (provinceCode !== currentProvince) {
+                    loadProvinceMap(provinceCode);
+                }
+            });
+        });
+        
+        // 默认加载第一个省份
+        if (provinces.length > 0) {
+            const provinceCode = getProvinceCode(provinces[0]);
+            loadProvinceMap(provinceCode);
+        }
+    }
+
+    // 绑定视图切换事件
+    function bindViewToggle() {
+        const toggleButton = document.getElementById('toggleCategoryView');
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        const viewTypeText = document.getElementById('viewTypeText');
+        
+        toggleButton.addEventListener('click', function() {
+            if (gridView.classList.contains('hidden')) {
+                // 切换到网格视图
+                gridView.classList.remove('hidden');
+                listView.classList.add('hidden');
+                viewTypeText.textContent = '列表视图';
+                toggleButton.querySelector('i').className = 'fas fa-bars ml-1';
+            } else {
+                // 切换到列表视图
+                gridView.classList.add('hidden');
+                listView.classList.remove('hidden');
+                viewTypeText.textContent = '网格视图';
+                toggleButton.querySelector('i').className = 'fas fa-th ml-1';
+            }
+        });
+    }
+
+    // 绑定模态框事件
+    function bindModalEvents() {
+        // 省份模态框
+        const openProvinceModal = document.getElementById('openProvinceModal');
+        const provinceModal = document.getElementById('provinceModal');
+        const closeProvinceModal = document.getElementById('closeProvinceModal');
+        
+        openProvinceModal.addEventListener('click', function() {
+            provinceModal.classList.remove('hidden');
+        });
+        
+        closeProvinceModal.addEventListener('click', function() {
+            provinceModal.classList.add('hidden');
+        });
+        
+        // 点击模态框背景关闭
+        provinceModal.addEventListener('click', function(e) {
+            if (e.target === provinceModal) {
+                provinceModal.classList.add('hidden');
+            }
+        });
+        
+        // 分类模态框
+        const moreCategories = document.getElementById('moreCategories');
+        const categoryModal = document.getElementById('categoryModal');
+        const closeCategoryModal = document.getElementById('closeCategoryModal');
+        
+        moreCategories.addEventListener('click', function() {
+            categoryModal.classList.remove('hidden');
+        });
+        
+        closeCategoryModal.addEventListener('click', function() {
+            categoryModal.classList.add('hidden');
+        });
+        
+        // 点击模态框背景关闭
+        categoryModal.addEventListener('click', function(e) {
+            if (e.target === categoryModal) {
+                categoryModal.classList.add('hidden');
+            }
+        });
+        
+        // 绑定模态框内省份选择
+        const provinceGridBtns = document.querySelectorAll('.province-grid-btn');
+        provinceGridBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 更新激活状态
+                provinceGridBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 获取省份并更新地图
+                const provinceName = this.textContent;
+                const provinceCode = getProvinceCode(provinceName);
+                
+                // 更新主界面省份按钮状态
+                updateMainProvinceButton(provinceName);
+                
+                // 加载地图
+                if (provinceCode !== currentProvince) {
+                    loadProvinceMap(provinceCode);
+                }
+                
+                // 关闭模态框
+                provinceModal.classList.add('hidden');
+            });
+        });
+        
+        // 绑定模态框内分类选择
+        const categoryModalBtns = document.querySelectorAll('.category-modal-btn');
+        categoryModalBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 更新激活状态
+                categoryModalBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 获取分类代码
+                const categoryCode = this.getAttribute('data-category');
+                
+                // 更新主界面分类按钮状态
+                updateMainCategoryButton(categoryCode);
+                
+                // 加载筛选后的特产数据
+                loadSpecialties(currentProvince, categoryCode);
+                
+                // 关闭模态框
+                categoryModal.classList.add('hidden');
+            });
+        });
+    }
+
+    // 将省份名称转换为代码
+    function getProvinceCode(provinceName) {
+        // 省份名称到代码的映射
+        const nameToCode = {
+            "湖北": "hubei",
+            "四川": "sichuan",
+            "广东": "guangdong",
+            "浙江": "zhejiang",
+            "江苏": "jiangsu",
+            "山东": "shandong",
+            "云南": "yunnan",
+            "贵州": "guizhou",
+            "福建": "fujian",
+            "湖南": "hunan",
+            "河南": "henan",
+            "北京": "beijing",
+            "天津": "tianjin",
+            "河北": "hebei",
+            "山西": "shanxi",
+            "内蒙古": "neimenggu",
+            "重庆": "chongqing",
+            "西藏": "xizang",
+            "辽宁": "liaoning",
+            "吉林": "jilin",
+            "黑龙江": "heilongjiang",
+            "陕西": "shaanxi",
+            "甘肃": "gansu",
+            "青海": "qinghai",
+            "宁夏": "ningxia",
+            "新疆": "xinjiang",
+            "上海": "shanghai",
+            "安徽": "anhui",
+            "江西": "jiangxi",
+            "广西": "guangxi",
+            "海南": "hainan",
+            "香港": "hongkong",
+            "澳门": "macao",
+            "台湾": "taiwan"
+        };
+        
+        return nameToCode[provinceName] || "hubei"; // 默认返回湖北
+    }
+
+    // 更新主界面省份按钮状态
+    function updateMainProvinceButton(provinceName) {
+        const provinceBtns = document.querySelectorAll('.province-btn');
+        
+        // 先检查是否有匹配的按钮
+        let found = false;
+        provinceBtns.forEach(btn => {
+            if (btn.textContent === provinceName) {
+                // 更新激活状态
+                provinceBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                found = true;
+            }
+        });
+        
+        // 如果没有找到匹配的按钮，添加一个新按钮
+        if (!found) {
+            const provinceContainer = document.querySelector('.province-btn').parentNode;
+            const button = document.createElement('button');
+            button.className = 'province-btn active';
+            button.textContent = provinceName;
+            
+            // 清除现有按钮的激活状态
+            provinceBtns.forEach(b => b.classList.remove('active'));
+            
+            // 添加到容器的第一个位置
+            if (provinceContainer.firstChild) {
+                provinceContainer.insertBefore(button, provinceContainer.firstChild);
+            } else {
+                provinceContainer.appendChild(button);
+            }
+            
+            // 绑定点击事件
+            button.addEventListener('click', function() {
+                provinceBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const provinceCode = getProvinceCode(this.textContent);
+                if (provinceCode !== currentProvince) {
+                    loadProvinceMap(provinceCode);
+                }
+            });
+        }
+    }
+
+    // 更新主界面分类按钮状态
+    function updateMainCategoryButton(categoryCode) {
+        // 更新网格视图按钮
+        const gridCategoryBtns = document.querySelectorAll('#gridView .category-btn');
+        gridCategoryBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-category') === categoryCode) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // 更新列表视图按钮
+        const listCategoryBtns = document.querySelectorAll('#listView .list-category-btn');
+        listCategoryBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-category') === categoryCode) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    // 更新UI以反映当前省份
+    function updateProvinceUI(province) {
+        // 获取省份名称
+        const provinceName = provinceMapping[province]?.name || '湖北省';
+        
+        // 更新省份按钮
+        const provinceBtns = document.querySelectorAll('.province-btn');
+        provinceBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent === provinceName) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // 更新区域筛选
+        updateRegionFilterForProvince(province);
+    }
+
+    // 更新区域筛选以匹配当前省份
+    function updateRegionFilterForProvince(province) {
+        // 省份到区域的映射
+        const provinceToRegion = {
+            "guangdong": "华南",
+            "hubei": "华中",
+            "sichuan": "西南",
+            "zhejiang": "华东",
+            "jiangsu": "华东",
+            "shandong": "华东",
+            "yunnan": "西南",
+            // ... 其他省份映射
+        };
+        
+        const region = provinceToRegion[province] || "华中";
+        
+        // 更新区域筛选UI
+        const regionPills = document.querySelectorAll('.filter-pill');
+        regionPills.forEach(pill => {
+            pill.classList.remove('active');
+            if (pill.textContent.trim() === region) {
+                pill.classList.add('active');
+            }
+        });
+        
+        // 如果是"更多"区域中的省份
+        if (["东北", "西北", "港澳台"].includes(region)) {
+            const moreButton = document.getElementById('moreRegions');
+            moreButton.innerHTML = `<i class="fas fa-check mr-1"></i>${region}`;
+            moreButton.classList.add('active');
+        }
+    }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 关于我们</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .about-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #D83931;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(216, 57, 49, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon i {
+            color: #D83931;
+        }
+        
+        .team-member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 16px;
+        }
+        
+        .team-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0ECE6;
+        }
+        
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background-color: rgba(216, 57, 49, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .contact-icon i {
+            color: #D83931;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <div class="about-gradient pt-10 pb-3 px-4">
+            <div class="flex items-center">
+                <a href="profile.html" class="text-white">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white ml-4 flex-1">关于我们</h1>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 应用简介 -->
+            <div class="p-4">
+                <div class="flex flex-col items-center mb-6">
+                    <div class="w-20 h-20 rounded-2xl overflow-hidden mb-3 shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1555979864-7a8f9b4fddf8?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=200" alt="App Logo" class="w-full h-full object-cover">
+                    </div>
+                    <h2 class="text-xl font-bold mb-1">风物舆图</h2>
+                    <p class="text-sm text-gray-500">中国特产美食地图导览平台</p>
+                    <p class="text-sm text-gray-500 mt-1">版本 1.0.0</p>
+                </div>
+                
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">
+                        <i class="fas fa-seedling"></i>我们的愿景
+                    </h2>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        "风物舆图"致力于成为中国特产文化与美食地图的集大成者，我们希望通过收集与整理全国各地的特色美食和特产，让用户便捷地了解中国丰富多彩的地域文化，为对中国美食文化感兴趣的用户提供一站式的信息检索和分享平台。
+                    </p>
+                </div>
+                
+                <!-- 核心特色 -->
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i>核心特色
+                    </h2>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">特产地图</h3>
+                            <p class="text-xs text-gray-600">覆盖全国31个省市自治区的特产分布图，支持按地区和品类筛选，快速定位心仪的地方特产。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">特产分类</h3>
+                            <p class="text-xs text-gray-600">细致的特产分类系统，包括主食、副食、小吃、茶饮、工艺品等多个类别，满足多元化的探索需求。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">足迹记录</h3>
+                            <p class="text-xs text-gray-600">自动记录用户浏览轨迹，形成专属美食地图，方便回顾与分享。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item mb-0">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">个人收藏</h3>
+                            <p class="text-xs text-gray-600">收藏喜爱的特产，建立属于自己的特产清单，规划下一站的美食之旅。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 联系我们 -->
+                <div class="card p-4 mb-4">
+                    <h2 class="section-title">
+                        <i class="fas fa-phone-alt"></i>联系我们
+                    </h2>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">邮箱</h3>
+                            <p class="text-xs text-gray-600">contact@xunweizhonghua.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-weixin"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">微信公众号</h3>
+                            <p class="text-xs text-gray-600">风物舆图探索</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium mb-1">地址</h3>
+                            <p class="text-xs text-gray-600">北京市海淀区中关村南大街5号</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 版权信息 -->
+                <div class="footer-text">
+                    <p>© 2024 风物舆图 版权所有</p>
+                    <p>保护非物质文化遗产，弘扬中华美食文化</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

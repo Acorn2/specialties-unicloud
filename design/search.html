@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 搜索</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .search-bar {
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-tag {
+            background-color: #F0ECE6;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #666666;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        
+        .search-tag:active {
+            background-color: #E6E0D9;
+        }
+        
+        .search-result {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .search-result:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tag {
+            border-radius: 10px;
+            font-size: 10px;
+            padding: 1px 6px;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 4px;
+        }
+        
+        .food-tag {
+            background-color: #F7C873;
+            color: #8B5000;
+        }
+        
+        .craft-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .fresh-tag {
+            background-color: #58D68D;
+            color: #1D6640;
+        }
+        
+        .heritage-tag {
+            background-color: #9B59B6;
+            color: white;
+        }
+        
+        .geo-tag {
+            background-color: #2980B9;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部搜索栏 (固定在顶部) -->
+        <div class="bg-white px-4 pt-10 pb-3 shadow-sm">
+            <div class="flex items-center">
+                <button class="w-8 h-8 flex items-center justify-center mr-2">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </button>
+                
+                <div class="flex search-bar bg-[#F0ECE6] p-2 items-center flex-1">
+                    <i class="fas fa-search text-gray-400 mx-2"></i>
+                    <input type="text" placeholder="搜索地方特产、美食..." class="flex-1 outline-none text-sm bg-transparent" value="豆瓣酱">
+                    <i class="fas fa-xmark text-gray-400 mx-2"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 搜索历史 -->
+            <div class="px-4 pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-medium">历史搜索</h2>
+                    <button class="text-xs text-gray-500">
+                        <i class="fas fa-trash-can mr-1"></i>清除
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap">
+                    <div class="search-tag">豆瓣酱</div>
+                    <div class="search-tag">四川特产</div>
+                    <div class="search-tag">西湖龙井</div>
+                    <div class="search-tag">安徽黄山毛峰</div>
+                    <div class="search-tag">苏州刺绣</div>
+                </div>
+            </div>
+            
+            <!-- 热门搜索 -->
+            <div class="px-4 pt-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-medium">热门搜索</h2>
+                </div>
+                
+                <div class="flex flex-wrap">
+                    <div class="search-tag">阳澄湖大闸蟹</div>
+                    <div class="search-tag">茅台酒</div>
+                    <div class="search-tag">陕西凉皮</div>
+                    <div class="search-tag">云南普洱茶</div>
+                    <div class="search-tag">景德镇瓷器</div>
+                    <div class="search-tag">宁夏枸杞</div>
+                </div>
+            </div>
+            
+            <!-- 搜索结果 -->
+            <div class="p-4 mt-4 mb-5">
+                <h2 class="text-sm font-medium mb-3">搜索结果</h2>
+                
+                <!-- 结果项1 -->
+                <div class="search-result p-3 flex items-center mb-3">
+                    <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="郫县豆瓣" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="ml-3 flex-1">
+                        <div class="flex items-center mb-1">
+                            <h3 class="font-medium text-sm">郫县豆瓣酱</h3>
+                            <span class="tag food-tag ml-2">食品类</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-1 line-clamp-2">四川省成都市郫都区特产，川菜的灵魂调料之一</p>
+                        <div class="flex items-center">
+                            <span class="text-xs text-gray-500">四川省</span>
+                            <div class="mx-1.5 h-3 w-px bg-gray-300"></div>
+                            <div class="flex items-center">
+                                <i class="fas fa-eye text-xs text-gray-400 mr-1"></i>
+                                <span class="text-xs text-gray-500">8.6千</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 结果项2 -->
+                <div class="search-result p-3 flex items-center mb-3">
+                    <img src="https://images.unsplash.com/photo-1615870123253-f3de8aa89e24?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1NDA3MTY&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="豆豉" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="ml-3 flex-1">
+                        <div class="flex items-center mb-1">
+                            <h3 class="font-medium text-sm">湖南豆豉</h3>
+                            <span class="tag food-tag ml-2">食品类</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-1 line-clamp-2">湖南地区常见调味品，由黑豆发酵制成</p>
+                        <div class="flex items-center">
+                            <span class="text-xs text-gray-500">湖南省</span>
+                            <div class="mx-1.5 h-3 w-px bg-gray-300"></div>
+                            <div class="flex items-center">
+                                <i class="fas fa-eye text-xs text-gray-400 mr-1"></i>
+                                <span class="text-xs text-gray-500">5.2千</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 结果项3 -->
+                <div class="search-result p-3 flex items-center">
+                    <img src="https://images.unsplash.com/photo-1614528767034-5593321e8c8c?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsc2F1Y2V8fHx8fHwxNjQ5NTQ0MDY4&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=120" alt="老干妈" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="ml-3 flex-1">
+                        <div class="flex items-center mb-1">
+                            <h3 class="font-medium text-sm">老干妈辣椒酱</h3>
+                            <span class="tag food-tag ml-2">食品类</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-1 line-clamp-2">贵州省贵阳市特产，以油辣椒为主料的复合调味料</p>
+                        <div class="flex items-center">
+                            <span class="text-xs text-gray-500">贵州省</span>
+                            <div class="mx-1.5 h-3 w-px bg-gray-300"></div>
+                            <div class="flex items-center">
+                                <i class="fas fa-eye text-xs text-gray-400 mr-1"></i>
+                                <span class="text-xs text-gray-500">1.2万</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 加载更多 -->
+                <div class="text-center mt-4">
+                    <button class="text-sm text-gray-500 px-4 py-2 rounded-full border border-gray-200">
+                        加载更多
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

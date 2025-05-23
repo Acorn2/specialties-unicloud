@@ -1,0 +1,104 @@
+{
+	"pages": [{
+		"path": "pages/index/index",
+		"style": {
+			"navigationBarTitleText": "风物舆图",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/map-specialty/map-specialty",
+		"style": {
+			"navigationBarTitleText": "地图寻味"
+		}
+	},
+	{
+		"path": "pages/ranking/ranking",
+		"style": {
+			"navigationBarTitleText": "特产榜单"
+		}
+	},
+	{
+		"path": "pages/profile/profile",
+		"style": {
+			"navigationBarTitleText": "我的"
+		}
+	},
+	{
+		"path": "pages/profile/footprints",
+		"style": {
+			"navigationBarTitleText": "我的足迹",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/profile/collections",
+		"style": {
+			"navigationBarTitleText": "我的收藏",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/detail/detail",
+		"style": {
+			"navigationBarTitleText": "特产详情",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/destination/hot-destinations",
+		"style": {
+			"navigationBarTitleText": "热门目的地",
+			"navigationStyle": "custom"
+		}
+	},
+	{
+		"path": "pages/search/search",
+		"style": {
+			"navigationBarTitleText": "搜索",
+			"navigationStyle": "custom"
+		}
+	}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "风物舆图",
+		"navigationBarBackgroundColor": "#D83931",
+		"backgroundColor": "#F8F5F1",
+		"app-plus": {
+			"background": "#efeff4"
+		}
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#D83931",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/tabbar/home_selected.png"
+			},
+			{
+				"pagePath": "pages/map-specialty/map-specialty",
+				"text": "地图",
+				"iconPath": "static/tabbar/map.png",
+				"selectedIconPath": "static/tabbar/map_selected.png"
+			},
+			{
+				"pagePath": "pages/ranking/ranking",
+				"text": "榜单",
+				"iconPath": "static/tabbar/ranking.png",
+				"selectedIconPath": "static/tabbar/ranking_selected.png"
+			},
+			{
+				"pagePath": "pages/profile/profile",
+				"text": "我的",
+				"iconPath": "static/tabbar/profile.png",
+				"selectedIconPath": "static/tabbar/profile_selected.png"
+			}
+		]
+	}
+}

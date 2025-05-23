@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 热门目的地</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F8F5F1;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        .brand-gradient {
+            background: linear-gradient(135deg, #D83931, #A82825);
+        }
+        
+        .card {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-bar {
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .destination-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .destination-card img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .destination-card:active img {
+            transform: scale(1.05);
+        }
+        
+        .destination-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+            font-weight: 600;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+        
+        .destination-lg {
+            height: 160px;
+        }
+        
+        .destination-md {
+            height: 130px;
+        }
+        
+        .destination-count {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(216, 57, 49, 0.8);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background-color: #F0ECE6;
+            color: #666666;
+            transition: all 0.2s ease;
+        }
+        
+        .tag.active {
+            background-color: #D83931;
+            color: white;
+        }
+        
+        .tag:active {
+            transform: scale(0.95);
+        }
+        
+        .fixed {
+            width: 100%;
+            max-width: 390px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-sizing: border-box;
+        }
+        
+        /* 底部导航栏项目样式 */
+        .fixed a {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .fixed a:active {
+            opacity: 0.85; /* 仅添加简单的点击反馈 */
+        }
+        
+        /* 优化图标和文字的垂直对齐 */
+        .fixed i {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 优化文字大小和行高 */
+        .fixed span {
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 (固定在顶部) -->
+        <div class="sticky top-0 z-10 brand-gradient">
+            <div class="flex items-center px-4 py-3">
+                <a href="index.html" class="text-white mr-3">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </a>
+                <h1 class="text-lg font-bold text-white flex-1">热门目的地</h1>
+            </div>
+            
+            <div class="px-4 pb-3">
+                <div class="flex search-bar bg-white p-2.5 items-center">
+                    <i class="fas fa-search text-gray-400 mx-2"></i>
+                    <input type="text" placeholder="搜索目的地..." class="flex-1 outline-none text-sm">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <!-- 筛选标签 -->
+            <div class="px-4 pt-4 pb-2 overflow-x-auto hide-scrollbar">
+                <div class="flex space-x-2 whitespace-nowrap">
+                    <div class="tag active" data-region="all">全部</div>
+                    <div class="tag" data-region="华东">华东</div>
+                    <div class="tag" data-region="华南">华南</div>
+                    <div class="tag" data-region="华中">华中</div>
+                    <div class="tag" data-region="华北">华北</div>
+                    <div class="tag" data-region="西南">西南</div>
+                    <div class="tag" data-region="西北">西北</div>
+                    <div class="tag" data-region="东北">东北</div>
+                </div>
+            </div>
+            
+            <!-- 省市切换 -->
+            <div class="px-4 mt-5 mb-5">
+                <div class="flex space-x-3 bg-[#F0ECE6] rounded-lg p-2">
+                    <button class="flex-1 py-2 px-3 rounded-lg text-gray-600" id="provinceTab">省份</button>
+                    <button class="flex-1 py-2 px-3 bg-white rounded-lg text-[#D83931] font-medium shadow-sm" id="cityTab">城市</button>
+                </div>
+            </div>
+            
+            <!-- 省份展示区域 -->
+            <div id="provinceSection" class="px-4 hidden">
+                <h2 class="text-lg font-bold mb-3">全部省份</h2>
+                <div class="grid grid-cols-2 gap-3" id="allProvinces">
+                    <a href="map-specialty.html?province=guangdong" class="destination-card destination-md" data-region="华南">
+                        <img src="https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="广东">
+                        <div class="destination-name">广东省</div>
+                        <div class="destination-count">98个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=zhejiang" class="destination-card destination-md" data-region="华东">
+                        <img src="https://images.unsplash.com/photo-1529883406927-7de37457a0cf?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1MzgyODY&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="浙江">
+                        <div class="destination-name">浙江省</div>
+                        <div class="destination-count">92个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=shandong" class="destination-card destination-md" data-region="华东">
+                        <img src="https://images.unsplash.com/photo-1558637845-c8b7ead71a3e?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgzNDE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="山东">
+                        <div class="destination-name">山东省</div>
+                        <div class="destination-count">87个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=jiangsu" class="destination-card destination-md" data-region="华东">
+                        <img src="https://images.unsplash.com/photo-1553210126-a39e0bdfd4a5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1MzgzNzU&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="江苏">
+                        <div class="destination-name">江苏省</div>
+                        <div class="destination-count">81个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=fujian" class="destination-card destination-md" data-region="华东">
+                        <img src="https://images.unsplash.com/photo-1517309230475-6736d926b979?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1Mzg0MDA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="福建">
+                        <div class="destination-name">福建省</div>
+                        <div class="destination-count">75个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=anhui" class="destination-card destination-md" data-region="华东">
+                        <img src="https://images.unsplash.com/photo-1510332981392-36692ea3a195?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1Mzg0MzA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="安徽">
+                        <div class="destination-name">安徽省</div>
+                        <div class="destination-count">69个特产</div>
+                    </a>
+                    
+                    <!-- 添加更多省份，确保每个省份都有对应的区域属性 -->
+                    <a href="map-specialty.html?province=hubei" class="destination-card destination-md" data-region="华中">
+                        <img src="https://images.unsplash.com/photo-1522547902298-51566e4fb383?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1Mzg0MzA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="湖北">
+                        <div class="destination-name">湖北省</div>
+                        <div class="destination-count">76个特产</div>
+                    </a>
+                    
+                    <a href="map-specialty.html?province=hunan" class="destination-card destination-md" data-region="华中">
+                        <img src="https://images.unsplash.com/photo-1522547902298-51566e4fb383?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3VsdHVyZXx8fHx8fDE2NDk1Mzg0MzA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=400" alt="湖南">
+                        <div class="destination-name">湖南省</div>
+                        <div class="destination-count">72个特产</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 城市展示区域 -->
+            <div id="citySection" class="px-4 mb-20">
+                <h2 class="text-lg font-bold mb-3">城市特产</h2>
+                <div class="space-y-3" id="allCities">
+                    <!-- 城市卡片示例 -->
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1542190891-2093d38760f2?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg0ODE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100" alt="成都" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-medium">成都市</h3>
+                                <span class="text-xs text-[#D83931]">56个特产 <i class="fas fa-chevron-right ml-1"></i></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">四川省</p>
+                            <div class="flex flex-wrap mt-1">
+                                <span class="text-xs bg-[#F7C873] text-[#8B5000] rounded px-1.5 py-0.5 mr-1">川菜</span>
+                                <span class="text-xs bg-[#58D68D] text-[#1D6640] rounded px-1.5 py-0.5 mr-1">火锅</span>
+                                <span class="text-xs bg-[#9B59B6] text-white rounded px-1.5 py-0.5">小吃</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1517309230475-6736d926b979?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg1NTI&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100" alt="杭州" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-medium">杭州市</h3>
+                                <span class="text-xs text-[#D83931]">48个特产 <i class="fas fa-chevron-right ml-1"></i></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">浙江省</p>
+                            <div class="flex flex-wrap mt-1">
+                                <span class="text-xs bg-[#F7C873] text-[#8B5000] rounded px-1.5 py-0.5 mr-1">茶叶</span>
+                                <span class="text-xs bg-[#58D68D] text-[#1D6640] rounded px-1.5 py-0.5 mr-1">丝绸</span>
+                                <span class="text-xs bg-[#9B59B6] text-white rounded px-1.5 py-0.5">点心</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-3 flex items-center">
+                        <img src="https://images.unsplash.com/photo-1508009603885-50cf7c8dd0d5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2MjA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100" alt="广州" class="w-16 h-16 object-cover rounded-lg">
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-medium">广州市</h3>
+                                <span class="text-xs text-[#D83931]">42个特产 <i class="fas fa-chevron-right ml-1"></i></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">广东省</p>
+                            <div class="flex flex-wrap mt-1">
+                                <span class="text-xs bg-[#F7C873] text-[#8B5000] rounded px-1.5 py-0.5 mr-1">粤菜</span>
+                                <span class="text-xs bg-[#58D68D] text-[#1D6640] rounded px-1.5 py-0.5 mr-1">点心</span>
+                                <span class="text-xs bg-[#9B59B6] text-white rounded px-1.5 py-0.5">药材</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- 在页面底部添加脚本 -->
+    <script>
+        // 区域-省份映射数据
+        const regionProvinceMap = {
+            "华东": ["上海", "江苏", "浙江", "安徽", "福建", "江西", "山东"],
+            "华南": ["广东", "广西", "海南"],
+            "华中": ["湖北", "湖南", "河南"],
+            "华北": ["北京", "天津", "河北", "山西", "内蒙古"],
+            "西南": ["重庆", "四川", "贵州", "云南", "西藏"],
+            "东北": ["辽宁", "吉林", "黑龙江"],
+            "西北": ["陕西", "甘肃", "青海", "宁夏", "新疆"]
+        };
+
+        // 省份到区域的映射
+        const provinceToRegion = {
+            "上海": "华东", "江苏": "华东", "浙江": "华东", "安徽": "华东", "福建": "华东", "江西": "华东", "山东": "华东",
+            "广东": "华南", "广西": "华南", "海南": "华南",
+            "湖北": "华中", "湖南": "华中", "河南": "华中",
+            "北京": "华北", "天津": "华北", "河北": "华北", "山西": "华北", "内蒙古": "华北",
+            "重庆": "西南", "四川": "西南", "贵州": "西南", "云南": "西南", "西藏": "西南",
+            "辽宁": "东北", "吉林": "东北", "黑龙江": "东北",
+            "陕西": "西北", "甘肃": "西北", "青海": "西北", "宁夏": "西北", "新疆": "西北"
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const provinceTab = document.getElementById('provinceTab');
+            const cityTab = document.getElementById('cityTab');
+            const provinceSection = document.getElementById('provinceSection');
+            const citySection = document.getElementById('citySection');
+
+            // 绑定区域标签点击事件
+            bindRegionTags();
+
+            // 省市切换事件处理
+            provinceTab.addEventListener('click', function() {
+                provinceTab.classList.add('bg-white', 'text-[#D83931]', 'font-medium', 'shadow-sm');
+                provinceTab.classList.remove('text-gray-600');
+                cityTab.classList.remove('bg-white', 'text-[#D83931]', 'font-medium', 'shadow-sm');
+                cityTab.classList.add('text-gray-600');
+                
+                provinceSection.classList.remove('hidden');
+                citySection.classList.add('hidden');
+            });
+
+            cityTab.addEventListener('click', function() {
+                cityTab.classList.add('bg-white', 'text-[#D83931]', 'font-medium', 'shadow-sm');
+                cityTab.classList.remove('text-gray-600');
+                provinceTab.classList.remove('bg-white', 'text-[#D83931]', 'font-medium', 'shadow-sm');
+                provinceTab.classList.add('text-gray-600');
+                
+                citySection.classList.remove('hidden');
+                provinceSection.classList.add('hidden');
+            });
+
+            // 初始化显示城市页面
+            cityTab.click();
+        });
+
+        // 绑定区域标签点击事件
+        function bindRegionTags() {
+            const regionTags = document.querySelectorAll('.tag');
+            regionTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 移除所有标签的激活状态
+                    regionTags.forEach(t => t.classList.remove('active'));
+                    
+                    // 添加当前标签的激活状态
+                    this.classList.add('active');
+                    
+                    // 获取选中的区域
+                    const selectedRegion = this.getAttribute('data-region');
+                    
+                    // 过滤省份
+                    filterProvincesByRegion(selectedRegion);
+                });
+            });
+        }
+
+        // 根据区域过滤省份
+        function filterProvincesByRegion(region) {
+            // 获取所有省份卡片
+            const allProvinces = document.querySelectorAll('#allProvinces .destination-card');
+            
+            // 如果选择"全部"，显示所有省份
+            if (region === 'all') {
+                allProvinces.forEach(province => {
+                    province.style.display = 'block';
+                });
+                
+                // 更新标题
+                updateSectionTitle('全部');
+                return;
+            }
+            
+            // 过滤全部省份
+            allProvinces.forEach(province => {
+                if (province.getAttribute('data-region') === region) {
+                    province.style.display = 'block';
+                } else {
+                    province.style.display = 'none';
+                }
+            });
+            
+            // 更新标题显示
+            updateSectionTitle(region);
+        }
+        
+        // 更新区域标题
+        function updateSectionTitle(region) {
+            // 获取标题元素
+            const allProvincesTitle = document.querySelector('#allProvinces').previousElementSibling;
+            
+            if (region === '全部') {
+                allProvincesTitle.textContent = '全部省份';
+            } else {
+                allProvincesTitle.textContent = region + '省份';
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>风物舆图 - 登录</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #FFFFFF;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 防止body滚动 */
+            height: 100vh; /* 视口高度 */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 390px;
+            width: 100%;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #FFFFFF;
+        }
+        
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 设置滚动条样式 */
+        .scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+        
+        /* 背景装饰 - 气泡效果 */
+        .bg-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        /* 顶部气泡装饰 */
+        .bubble-top-1 {
+            position: absolute;
+            top: -40px;
+            left: -40px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 57, 49, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-top-2 {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 57, 49, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-top-3 {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 57, 49, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-top-4 {
+            position: absolute;
+            top: 80px;
+            right: 50px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 57, 49, 0.04) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        /* 底部气泡装饰 */
+        .bubble-bottom-1 {
+            position: absolute;
+            bottom: -60px;
+            right: -30px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.09) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-bottom-2 {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.07) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-bottom-3 {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-bottom-4 {
+            position: absolute;
+            bottom: 100px;
+            left: -20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-bottom-5 {
+            position: absolute;
+            bottom: 160px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.04) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-bottom-6 {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        /* 中部装饰气泡 - 混合颜色 */
+        .bubble-middle-1 {
+            position: absolute;
+            top: 50%;
+            left: -40px;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(216, 57, 49, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .bubble-middle-2 {
+            position: absolute;
+            top: 45%;
+            right: -20px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(93, 158, 148, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+        
+        .login-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+        
+        .app-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #D83931;
+            box-shadow: 0 6px 16px rgba(216, 57, 49, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-logo i {
+            color: white;
+            font-size: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .app-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333333;
+        }
+        
+        .app-slogan {
+            font-size: 16px;
+            color: #666666;
+            text-align: center;
+        }
+        
+        .wechat-btn {
+            background: linear-gradient(135deg, #D83931, #A82825);
+            color: white;
+            border-radius: 24px;
+            padding: 14px 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 8px rgba(216, 57, 49, 0.2);
+        }
+        
+        .wechat-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(216, 57, 49, 0.2);
+        }
+        
+        .privacy-container {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 16px;
+        }
+        
+        .privacy-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #D83931;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .privacy-text {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.5;
+        }
+        
+        .privacy-link {
+            color: #D83931;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 气泡状背景装饰 -->
+        <div class="bg-decoration">
+            <!-- 顶部气泡 -->
+            <div class="bubble-top-1"></div>
+            <div class="bubble-top-2"></div>
+            <div class="bubble-top-3"></div>
+            <div class="bubble-top-4"></div>
+            
+            <!-- 中部气泡 -->
+            <div class="bubble-middle-1"></div>
+            <div class="bubble-middle-2"></div>
+            
+            <!-- 底部气泡 -->
+            <div class="bubble-bottom-1"></div>
+            <div class="bubble-bottom-2"></div>
+            <div class="bubble-bottom-3"></div>
+            <div class="bubble-bottom-4"></div>
+            <div class="bubble-bottom-5"></div>
+            <div class="bubble-bottom-6"></div>
+        </div>
+        
+        <!-- 可滚动内容区域 -->
+        <div class="scrollable-content">
+            <div class="login-content">
+                <!-- 应用Logo和名称 -->
+                <div class="logo-container">
+                    <div class="app-logo">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h1 class="app-name">风物舆图</h1>
+                    <p class="app-slogan">探索地方特产，品味中华美食</p>
+                </div>
+                
+                <!-- 登录按钮和隐私政策 -->
+                <div>
+                    <button class="wechat-btn w-full">
+                        <i class="fab fa-weixin text-lg mr-2"></i>
+                        微信一键登录
+                    </button>
+                    
+                    <div class="privacy-container">
+                        <div class="privacy-checkbox">
+                            <i class="fas fa-check text-xs"></i>
+                        </div>
+                        <div class="privacy-text">
+                            登录即表示您已阅读并同意
+                            <a href="#" class="privacy-link">《用户服务协议》</a> 和
+                            <a href="#" class="privacy-link">《隐私政策》</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 微信一键登录
+            const wechatBtn = document.querySelector('.wechat-btn');
+            wechatBtn.addEventListener('click', function() {
+                // 模拟微信授权后跳转
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            });
+            
+            // 隐私政策勾选
+            const privacyCheckbox = document.querySelector('.privacy-checkbox');
+            privacyCheckbox.addEventListener('click', function() {
+                const checkIcon = this.querySelector('i');
+                if (checkIcon.style.display === 'none') {
+                    checkIcon.style.display = '';
+                    wechatBtn.disabled = false;
+                    wechatBtn.classList.remove('opacity-50');
+                } else {
+                    checkIcon.style.display = 'none';
+                    wechatBtn.disabled = true;
+                    wechatBtn.classList.add('opacity-50');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

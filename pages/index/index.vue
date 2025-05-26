@@ -147,7 +147,7 @@ export default {
 			uni.navigateTo({ url: '/pages/search/search' });
 		},
 		navigateToHotDestinations() {
-			uni.navigateTo({ url: '/pages/hot-destinations/hot-destinations' });
+			uni.navigateTo({ url: '/pages/destination/hot-destinations' });
 		},
 		navigateToMapSpecialty(province) {
 			let url = '/pages/map-specialty/map-specialty';

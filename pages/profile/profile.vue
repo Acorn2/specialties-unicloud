@@ -4,6 +4,9 @@
 		<scroll-view scroll-y="true" class="scrollable-content">
 			<!-- 顶部个人信息 -->
 			<view class="profile-gradient pt-10 pb-6 px-4 rounded-b-[24px]">
+				<!-- 标题 -->
+				<view class="text-center text-white text-xl font-bold mb-4">我的</view>
+				
 				<!-- 设置和消息按钮 -->
 				<view class="flex justify-end mb-2">
 					<view class="w-8 h-8 flex items-center justify-center rounded-full bg-white bg-opacity-20" @tap="goToSettings">
@@ -140,19 +143,18 @@
 			// 获取用户信息
 			async getUserInfo() {
 				try {
-					const { data: res } = await this.$cloud.callFunction({
-						name: 'profile',
-						data: {
-							action: 'getUserInfo'
-						}
-					});
+					// 临时使用模拟数据
+					const mockUserInfo = {
+						userId: 'user123456',
+						nickname: '云游客',
+						avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
+						location: '北京市',
+						collectCount: 28,
+						footprintCount: 56
+					};
 					
-					if (res.code === 0 && res.data) {
-						this.userInfo = res.data;
-					} else {
-						// 使用默认数据
-						console.log('获取用户信息失败，使用默认数据');
-					}
+					this.userInfo = mockUserInfo;
+					
 				} catch (e) {
 					console.error('获取用户信息失败:', e);
 					uni.showToast({
@@ -165,18 +167,29 @@
 			// 获取最近足迹
 			async getRecentFootprints() {
 				try {
-					const { data: res } = await this.$cloud.callFunction({
-						name: 'profile',
-						data: {
-							action: 'getRecentFootprints'
+					// 临时使用模拟数据
+					const mockFootprints = [
+						{
+							id: 'fp001',
+							name: '北京烤鸭',
+							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
+							visitTime: '2023-05-15'
+						},
+						{
+							id: 'fp002',
+							name: '兰州牛肉面',
+							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
+							visitTime: '2023-05-14'
+						},
+						{
+							id: 'fp003',
+							name: '西湖龙井',
+							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
+							visitTime: '2023-05-13'
 						}
-					});
+					];
 					
-					if (res.code === 0) {
-						this.footprints = res.data;
-					} else {
-						console.log('获取足迹失败:', res.msg);
-					}
+					this.footprints = mockFootprints;
 				} catch (e) {
 					console.error('获取足迹失败:', e);
 					uni.showToast({
@@ -212,9 +225,8 @@
 			
 			// 关于我们
 			goToAbout() {
-				uni.showToast({
-					title: '关于页面开发中...',
-					icon: 'none'
+				uni.navigateTo({
+					url: '/pages/about/about'
 				});
 			}
 		}
@@ -237,6 +249,7 @@
 	overflow-x: hidden;
 	-webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
 	position: relative;
+	padding-bottom: 60px; /* 为底部导航腾出空间 */
 }
 
 .profile-gradient {
@@ -297,5 +310,14 @@
 		display: none;
 	}
 	scrollbar-width: none;
+}
+
+.fixed-bottom {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+	box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
 }
 </style> 

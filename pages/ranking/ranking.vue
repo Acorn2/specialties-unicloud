@@ -1,46 +1,44 @@
- <template>
+<template>
   <view class="app-container">
     
     <!-- 区域选择栏 -->
     <view class="region-container">
       <!-- 区域选择标签 -->
       <view class="region-tab-container">
-        <scroll-view class="region-scroll" scroll-x show-scrollbar="false">
-          <view class="region-list">
-            <view 
-              v-for="(region, index) in regions" 
-              :key="index" 
-              :class="['filter-pill', {'active': currentRegion === region.code}]"
-              @click="switchRegion(region.code)">
-              {{ region.name }}
-            </view>
-            <view class="filter-pill" @click="toggleMoreRegions">
-              <text class="iconfont icon-more"></text>更多
-            </view>
+        <scroll-view scroll-x="true" class="flex overflow-x-auto hide-scrollbar pb-1" show-scrollbar="false">
+          <view 
+            v-for="(region, index) in regions" 
+            :key="index"
+            class="filter-pill" 
+            :class="{'active': currentRegion === region.code}"
+            @tap="switchRegion(region.code)">
+            {{ region.name }}
+          </view>
+          <view class="filter-pill" :class="{'active': isMoreRegionActive}" @tap="toggleMoreRegions">
+            <text class="fas fa-ellipsis mr-1" v-if="!selectedMoreRegionName"></text>
+            {{ selectedMoreRegionName || '更多' }}
           </view>
         </scroll-view>
       </view>
       
       <!-- 省份选择器 -->
-      <view class="province-container">
-        <view class="province-header">
-          <text class="province-header-text">当前省份</text>
-          <view class="view-all-btn" @click="openProvinceModal">
-            <text class="view-all-text">查看全部省份</text>
-            <text class="iconfont icon-right"></text>
+      <view class="p-3 border-t border-gray-100">
+        <view class="flex justify-between mb-2">
+          <text class="text-xs text-gray-500">当前省份</text>
+          <view class="text-xs text-red flex items-center" @tap="openProvinceModal">
+            查看全部省份 <text class="fas fa-chevron-right ml-1"></text>
           </view>
         </view>
-        <scroll-view class="province-scroll" scroll-x show-scrollbar="false">
-          <view class="province-list">
-            <view 
-              v-for="(province, index) in filteredProvinces" 
-              :key="index" 
-              :class="['province-btn', {'active': currentProvince === province.code}]"
-              @click="switchProvince(province.code)">
-              {{ province.name }}
-            </view>
+        <view class="province-pills-container">
+          <view 
+            v-for="(province, index) in filteredProvinces" 
+            :key="index"
+            class="province-pill" 
+            :class="{'active': currentProvince === province.code}"
+            @tap="switchProvince(province.code)">
+            {{ province.name }}
           </view>
-        </scroll-view>
+        </view>
       </view>
     </view>
     
@@ -157,6 +155,8 @@ export default {
       currentRegion: 'central',
       currentProvince: 'hubei',
       provinceName: '湖北省',
+      selectedMoreRegionName: '',
+      isMoreRegionActive: false,
       
       // 区域数据
       regions: [
@@ -308,11 +308,14 @@ export default {
     // 切换区域
     switchRegion(regionCode) {
       this.currentRegion = regionCode;
+      this.isMoreRegionActive = false;
+      this.selectedMoreRegionName = '';
+      this.showMoreRegionsDropdown = false;
+      
       // 默认选中该区域的第一个省份
       if (this.filteredProvinces.length > 0) {
         this.switchProvince(this.filteredProvinces[0].code);
       }
-      this.showMoreRegions = false;
     },
     
     // 切换省份
@@ -327,21 +330,32 @@ export default {
       this.showProvinceModal = false;
     },
     
-    // 显示更多区域菜单
+    // 选择更多区域
+    selectMoreRegion(regionCode) {
+      const region = this.moreRegions.find(r => r.code === regionCode);
+      if (region) {
+        this.currentRegion = regionCode;
+        this.selectedMoreRegionName = region.name;
+        this.isMoreRegionActive = true;
+        this.showMoreRegionsDropdown = false;
+        
+        // 默认选择该区域的第一个省份
+        const firstProvince = this.regionProvinces.find(r => r.code === regionCode)?.provinces[0];
+        if (firstProvince) {
+          this.switchProvince(firstProvince.code);
+        }
+      }
+    },
+    
+    // 切换更多区域下拉菜单
     toggleMoreRegions(event) {
       // 计算位置
       const rect = event.target.getBoundingClientRect();
       this.moreRegionsStyle = {
         top: `${rect.bottom + 5}px`,
-        left: `${rect.left}px`
+        right: `${window.innerWidth - rect.right}px`
       };
-      this.showMoreRegions = !this.showMoreRegions;
-    },
-    
-    // 选择更多区域菜单中的区域
-    selectMoreRegion(regionCode) {
-      this.switchRegion(regionCode);
-      this.showMoreRegions = false;
+      this.showMoreRegionsDropdown = !this.showMoreRegionsDropdown;
     },
     
     // 打开省份模态框
@@ -544,83 +558,111 @@ page {
   padding: 20rpx 30rpx 10rpx;
 }
 
-.region-scroll {
-  white-space: nowrap;
+.flex {
+  display: flex;
 }
 
-.region-list {
-  display: flex;
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-1 {
+  padding-bottom: 4px;
 }
 
 .filter-pill {
-  border-radius: 32rpx;
-  padding: 12rpx 24rpx;
-  font-size: 24rpx;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
   background-color: #F0ECE6;
   color: #666666;
-  margin-right: 16rpx;
-  display: inline-block;
-  transition: all 0.3s;
+  margin-right: 8px;
+  transition: all 0.2s ease;
 }
 
 .filter-pill.active {
-  background-color: #E74C3C;
-  color: #FFFFFF;
-  font-weight: 500;
+  background-color: #D83931;
+  color: white;
 }
 
-/* 省份选择器 */
-.province-container {
-  padding: 16rpx 30rpx;
-  border-top: 2rpx solid #F0F0F0;
+.filter-pill:active {
+  transform: scale(0.95);
 }
 
-.province-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16rpx;
+.p-3 {
+  padding: 12px;
 }
 
-.province-header-text {
-  font-size: 24rpx;
-  color: #999999;
+.border-t {
+  border-top-width: 1px;
 }
 
-.view-all-btn {
-  display: flex;
+.border-gray-100 {
+  border-color: #f7fafc;
+}
+
+.mb-2 {
+  margin-bottom: 8px;
+}
+
+.text-xs {
+  font-size: 12px;
+}
+
+.text-gray-500 {
+  color: #718096;
+}
+
+.text-red {
+  color: #D83931;
+}
+
+.items-center {
   align-items: center;
 }
 
-.view-all-text {
-  font-size: 24rpx;
-  color: #E74C3C;
+.justify-between {
+  justify-content: space-between;
 }
 
-.province-scroll {
-  white-space: nowrap;
+.ml-1 {
+  margin-left: 4px;
 }
 
-.province-list {
+.province-pills-container {
   display: flex;
-  padding: 4rpx 0;
+  flex-wrap: wrap;
+  padding: 4px 0;
 }
 
-.province-btn {
-  padding: 12rpx 20rpx;
-  border-radius: 32rpx;
-  font-size: 24rpx;
-  background-color: #FFFFFF;
+.province-pill {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  background-color: #f5f5f5;
   color: #333333;
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
-  margin-right: 16rpx;
-  margin-bottom: 16rpx;
-  display: inline-block;
-  transition: all 0.3s;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
 }
 
-.province-btn.active {
-  background-color: #E74C3C;
-  color: #FFFFFF;
+.province-pill.active {
+  background-color: #D83931;
+  color: white;
+}
+
+.province-pill:active {
+  transform: scale(0.95);
 }
 
 /* 内容区域 */
@@ -969,23 +1011,30 @@ page {
 
 /* 更多区域弹出菜单 */
 .region-dropdown {
-  position: fixed;
-  z-index: 50;
-  background-color: #FFFFFF;
-  border-radius: 12rpx;
-  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.1);
-  padding: 8rpx 0;
-  min-width: 180rpx;
+  position: absolute;
+  top: 110px;
+  right: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  width: 160rpx;
 }
 
 .region-dropdown-item {
-  padding: 16rpx 30rpx;
-  font-size: 28rpx;
-  color: #333333;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.region-dropdown-item:last-child {
+  border-bottom: none;
 }
 
 .region-dropdown-item:active {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 /* 空状态和加载状态 */

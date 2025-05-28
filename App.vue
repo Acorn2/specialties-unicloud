@@ -30,4 +30,7 @@
 		color: #333;
 		padding: 10px;
 	}
+
+	/* 引入图标字体库 */
+	@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 </style>

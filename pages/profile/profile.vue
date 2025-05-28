@@ -3,46 +3,57 @@
 		<!-- 可滚动内容区域 -->
 		<scroll-view scroll-y="true" class="scrollable-content">
 			<!-- 顶部个人信息 -->
-			<view class="profile-gradient pt-10 pb-6 px-4 rounded-b-[24px]">
-				<!-- 标题 -->
-				<view class="text-center text-white text-xl font-bold mb-4">我的</view>
+			<view style="background: linear-gradient(135deg, #D83931, #A82825); border-radius: 0 0 24px 24px;" class="pt-10 pb-6 px-4">
 				
 				<!-- 设置和消息按钮 -->
-				<view class="flex justify-end mb-2">
-					<view class="w-8 h-8 flex items-center justify-center rounded-full bg-white bg-opacity-20" @tap="goToSettings">
-						<text class="fas fa-gear text-white text-sm"></text>
+				<view style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+					<view style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: rgba(255, 255, 255, 0.2);" @tap="goToSettings">
+						<!-- 使用uni-icons -->
+						<uni-icons type="gear" size="18" color="#FFFFFF"></uni-icons>
 					</view>
 				</view>
 				
 				<!-- 用户资料 -->
-				<view class="flex items-center">
-					<image :src="userInfo.avatar || defaultAvatar" mode="aspectFill" class="avatar"></image>
+				<view style="display: flex; align-items: center;">
+					<image :src="userInfo.avatar || defaultAvatar" mode="aspectFill" style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); object-fit: cover;"></image>
 					
-					<view class="ml-4">
-						<text class="text-white text-lg font-bold">{{userInfo.nickname || '未登录'}}</text>
-						<view class="flex items-center mt-1">
-							<text class="text-white text-opacity-90 text-xs mr-3">ID: {{userInfo.userId || '未登录'}}</text>
-							<view class="flex items-center px-2 py-1 bg-white bg-opacity-20 rounded-full">
-								<text class="fas fa-map-marker-alt text-white text-opacity-90 text-xs mr-1"></text>
-								<text class="text-white text-opacity-90 text-xs">{{userInfo.location || '未设置'}}</text>
+					<view style="margin-left: 16px;">
+						<text style="color: #FFFFFF; font-size: 18px; font-weight: bold;">{{userInfo.nickname || '未登录'}}</text>
+						<view style="display: flex; align-items: center; margin-top: 4px;">
+							<text style="color: rgba(255, 255, 255, 0.9); font-size: 12px; margin-right: 12px;">ID: {{userInfo.userId || '未登录'}}</text>
+							<view style="display: flex; align-items: center; padding: 2px 8px; background-color: rgba(255, 255, 255, 0.2); border-radius: 9999px;">
+								<uni-icons type="location" size="12" color="#FFFFFF"></uni-icons>
+								<text style="color: rgba(255, 255, 255, 0.9); font-size: 12px; margin-left: 4px;">{{userInfo.location || '未设置'}}</text>
 							</view>
 						</view>
 					</view>
 				</view>
 				
 				<!-- 数据统计 -->
-				<view class="flex justify-around mt-6 bg-white bg-opacity-10 rounded-lg py-3">
-					<navigator url="/pages/profile/collections" class="flex flex-col items-center">
-						<text class="text-white font-medium">{{userInfo.collectCount || 0}}</text>
-						<text class="text-white text-opacity-80 text-xs mt-1">收藏</text>
-					</navigator>
+				<view style="display: flex; justify-content: space-around; align-items: center; margin-top: 24px; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px 0;">
+					<view style="display: flex; flex-direction: column; align-items: center; width: 45%; text-align: center;">
+						<navigator url="/pages/profile/collections" style="width: 100%; text-align: center;">
+							<view style="font-size: 18px; color: #FFFFFF; margin-bottom: 8px; font-weight: normal; text-align: center;">
+								{{userInfo.collectCount || 0}}
+							</view>
+							<view style="font-size: 18px; color: rgba(255, 255, 255, 0.8); text-align: center;">
+								收藏
+							</view>
+						</navigator>
+					</view>
 					
-					<view class="stat-border"></view>
+					<view style="width: 1px; height: 40px; background-color: rgba(255, 255, 255, 0.3);"></view>
 					
-					<navigator url="/pages/profile/footprints" class="flex flex-col items-center">
-						<text class="text-white font-medium">{{userInfo.footprintCount || 0}}</text>
-						<text class="text-white text-opacity-80 text-xs mt-1">足迹</text>
-					</navigator>
+					<view style="display: flex; flex-direction: column; align-items: center; width: 45%; text-align: center;">
+						<navigator url="/pages/profile/footprints" style="width: 100%; text-align: center;">
+							<view style="font-size: 18px; color: #FFFFFF; margin-bottom: 8px; font-weight: normal; text-align: center;">
+								{{userInfo.footprintCount || 0}}
+							</view>
+							<view style="font-size: 18px; color: rgba(255, 255, 255, 0.8); text-align: center;">
+								足迹
+							</view>
+						</navigator>
+					</view>
 				</view>
 			</view>
 			
@@ -55,7 +66,7 @@
 					</navigator>
 				</view>
 				
-				<scroll-view scroll-x="true" class="whitespace-nowrap hide-scrollbar pb-2">
+				<scroll-view scroll-x="true" class="flex overflow-x-auto hide-scrollbar pb-2">
 					<view v-if="footprints.length === 0" class="flex justify-center items-center py-6 w-full">
 						<text class="text-gray-400">暂无足迹记录</text>
 					</view>
@@ -123,7 +134,7 @@
 	export default {
 		data() {
 			return {
-				defaultAvatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
+				defaultAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8cG9ydHJhaXR8fHx8fHwxNjQ5NTQyODUz&ixlib=rb-1.2.1&q=80',
 				userInfo: {
 					userId: '',
 					nickname: '未登录',
@@ -143,18 +154,36 @@
 			// 获取用户信息
 			async getUserInfo() {
 				try {
-					// 临时使用模拟数据
+					// 使用模拟数据
 					const mockUserInfo = {
-						userId: 'user123456',
-						nickname: '云游客',
-						avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-						location: '北京市',
-						collectCount: 28,
-						footprintCount: 56
+						userId: '20240501',
+						nickname: '寻味探索者',
+						avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8cG9ydHJhaXR8fHx8fHwxNjQ5NTQyODUz&ixlib=rb-1.2.1&q=80',
+						location: '北京',
+						collectCount: 26,
+						footprintCount: 48
 					};
 					
 					this.userInfo = mockUserInfo;
 					
+					// 云函数调用（暂时注释）
+					/*
+					const { result } = await uniCloud.callFunction({
+						name: 'profile',
+						data: {
+							action: 'getUserInfo'
+						}
+					});
+					
+					if (result && result.code === 0) {
+						this.userInfo = result.data;
+					} else {
+						uni.showToast({
+							title: result?.msg || '获取用户信息失败',
+							icon: 'none'
+						});
+					}
+					*/
 				} catch (e) {
 					console.error('获取用户信息失败:', e);
 					uni.showToast({
@@ -167,29 +196,48 @@
 			// 获取最近足迹
 			async getRecentFootprints() {
 				try {
-					// 临时使用模拟数据
+					// 使用模拟数据
 					const mockFootprints = [
 						{
 							id: 'fp001',
-							name: '北京烤鸭',
-							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-							visitTime: '2023-05-15'
+							name: '郫县豆瓣酱',
+							image: 'https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80',
+							visitTime: '今天 10:30'
 						},
 						{
 							id: 'fp002',
-							name: '兰州牛肉面',
-							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-							visitTime: '2023-05-14'
+							name: '苏州刺绣',
+							image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80',
+							visitTime: '昨天 16:45'
 						},
 						{
 							id: 'fp003',
 							name: '西湖龙井',
-							image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-							visitTime: '2023-05-13'
+							image: 'https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80',
+							visitTime: '3天前'
 						}
 					];
 					
 					this.footprints = mockFootprints;
+					
+					// 云函数调用（暂时注释）
+					/*
+					const { result } = await uniCloud.callFunction({
+						name: 'profile',
+						data: {
+							action: 'getRecentFootprints'
+						}
+					});
+					
+					if (result && result.code === 0) {
+						this.footprints = result.data;
+					} else {
+						uni.showToast({
+							title: result?.msg || '获取足迹失败',
+							icon: 'none'
+						});
+					}
+					*/
 				} catch (e) {
 					console.error('获取足迹失败:', e);
 					uni.showToast({
@@ -233,91 +281,177 @@
 	}
 </script>
 
-<style lang="scss">
+<style>
+/* 全局样式定义 */
+page {
+    background-color: #F8F5F1;
+}
+
+body {
+    font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+    background-color: #F8F5F1;
+    color: #333333;
+    margin: 0;
+    padding: 0;
+}
+
 .app-container {
-	position: relative;
-	width: 100%;
-	height: 100vh;
-	background-color: #F8F5F1;
-	display: flex;
-	flex-direction: column;
+    max-width: 750px;
+    width: 100%;
+    margin: 0 auto;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #F8F5F1;
 }
 
 .scrollable-content {
-	flex: 1;
-	overflow-y: auto;
-	overflow-x: hidden;
-	-webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
-	position: relative;
-	padding-bottom: 60px; /* 为底部导航腾出空间 */
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+    position: relative;
+}
+
+/* 设置滚动条样式 */
+.scrollable-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
 }
 
 .profile-gradient {
-	background: linear-gradient(135deg, #D83931, #A82825);
-}
-
-.avatar {
-	width: 70px;
-	height: 70px;
-	border-radius: 50%;
-	border: 3px solid white;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-	object-fit: cover;
-}
-
-.stat-border {
-	width: 1px;
-	height: 24px;
-	background: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #D83931, #A82825);
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
 }
 
 .card {
-	border-radius: 12px;
-	background: white;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	transition: all 0.3s ease;
-	
-	&:active {
-		transform: scale(0.98);
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-	}
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+}
+
+.stat-border {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .divider {
-	height: 8px;
-	background-color: #F0ECE6;
+    height: 8px;
+    background-color: #F0ECE6;
 }
 
 .menu-item {
-	display: flex;
-	align-items: center;
-	padding: 16px;
-	border-bottom: 1px solid #F0ECE6;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #F0ECE6;
 }
 
 .menu-icon {
-	width: 36px;
-	height: 36px;
-	border-radius: 18px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
 .hide-scrollbar {
-	::-webkit-scrollbar {
-		display: none;
-	}
-	scrollbar-width: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.fixed-bottom {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	z-index: 100;
-	box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
-}
+/* Tailwind 样式类 */
+.flex { display: flex; }
+.flex-1 { flex: 1; }
+.flex-col { flex-direction: column; }
+.flex-shrink-0 { flex-shrink: 0; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-hidden { overflow: hidden; }
+.whitespace-nowrap { white-space: nowrap; }
+.rounded-full { border-radius: 9999px; }
+.rounded-lg { border-radius: 0.5rem; }
+.rounded-t-xl { border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; }
+.rounded-b-\[24px\] { border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
+.bg-white { background-color: white; }
+.bg-opacity-10 { --tw-bg-opacity: 0.1; }
+.bg-opacity-20 { --tw-bg-opacity: 0.2; }
+.bg-red-50 { background-color: rgba(254, 242, 242, 1); }
+.bg-blue-50 { background-color: rgba(239, 246, 255, 1); }
+.bg-orange-50 { background-color: rgba(255, 247, 237, 1); }
+.bg-gray-50 { background-color: rgba(249, 250, 251, 1); }
+.text-white { color: white; }
+.text-opacity-80 { --tw-text-opacity: 0.8; }
+.text-opacity-90 { --tw-text-opacity: 0.9; }
+.text-\[\#D83931\] { color: #D83931; }
+.text-gray-300 { color: #d1d5db; }
+.text-gray-400 { color: #9ca3af; }
+.text-gray-500 { color: #6b7280; }
+.text-blue-500 { color: #3b82f6; }
+.text-orange-500 { color: #f97316; }
+.text-lg { font-size: 1.125rem; }
+.text-base { font-size: 1rem; }
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.pt-10 { padding-top: 2.5rem; }
+.pb-6 { padding-bottom: 1.5rem; }
+.pb-2 { padding-bottom: 0.5rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.p-2 { padding: 0.5rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-5 { margin-bottom: 1.25rem; }
+.ml-1 { margin-left: 0.25rem; }
+.ml-4 { margin-left: 1rem; }
+.mr-1 { margin-right: 0.25rem; }
+.mr-3 { margin-right: 0.75rem; }
+.mx-4 { margin-left: 1rem; margin-right: 1rem; }
+.w-8 { width: 2rem; }
+.h-8 { height: 2rem; }
+.w-40 { width: 10rem; }
+.h-24 { height: 6rem; }
+.w-full { width: 100%; }
+.object-cover { object-fit: cover; }
 </style> 

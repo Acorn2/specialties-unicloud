@@ -1,7 +1,7 @@
-
 // #ifndef VUE3
 import Vue from 'vue'
 import App from './App'
+import '@fortawesome/fontawesome-free/css/all.css';
 
 Vue.config.productionTip = false
 

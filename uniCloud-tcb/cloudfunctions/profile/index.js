@@ -37,17 +37,25 @@ exports.main = async (event, context) => {
 async function getUserInfo(userOpenId) {
 	try {
 		// 实际项目中应该从数据库查询
-		// const db = uniCloud.database();
-		// const userInfo = await db.collection('users').where({ openId: userOpenId }).get();
+		/* 
+		const db = uniCloud.database();
+		const userInfo = await db.collection('users').where({ openId: userOpenId }).get();
+		if (userInfo.data && userInfo.data.length > 0) {
+			return {
+				code: 0,
+				data: userInfo.data[0]
+			};
+		}
+		*/
 		
 		// 模拟数据
 		const userInfo = {
-			userId: 'user123456',
-			nickname: '云游客',
-			avatar: 'https://img.yzcdn.cn/vant/cat.jpeg',
-			location: '北京市',
-			collectCount: 28,
-			footprintCount: 56
+			userId: '20240501',
+			nickname: '寻味探索者',
+			avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&ixid=MnwxfDB8MXxyYW5kb218MHx8cG9ydHJhaXR8fHx8fHwxNjQ5NTQyODUz&ixlib=rb-1.2.1&q=80',
+			location: '北京',
+			collectCount: 26,
+			footprintCount: 48
 		};
 		
 		return {
@@ -67,32 +75,39 @@ async function getUserInfo(userOpenId) {
 async function getRecentFootprints(userOpenId) {
 	try {
 		// 实际项目中应该从数据库查询
-		// const db = uniCloud.database();
-		// const footprints = await db.collection('footprints')
-		//   .where({ userOpenId })
-		//   .orderBy('visitTime', 'desc')
-		//   .limit(5)
-		//   .get();
+		/*
+		const db = uniCloud.database();
+		const footprints = await db.collection('footprints')
+		  .where({ userOpenId })
+		  .orderBy('visitTime', 'desc')
+		  .limit(3)
+		  .get();
 		
-		// 模拟数据
+		return {
+			code: 0,
+			data: footprints.data
+		};
+		*/
+		
+		// 模拟数据 - 与HTML原型保持一致
 		const footprints = [
 			{
 				id: 'fp001',
-				name: '北京烤鸭',
-				image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-				visitTime: '2023-05-15'
+				name: '郫县豆瓣酱',
+				image: 'https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80',
+				visitTime: '今天 10:30'
 			},
 			{
 				id: 'fp002',
-				name: '兰州牛肉面',
-				image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-				visitTime: '2023-05-14'
+				name: '苏州刺绣',
+				image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80',
+				visitTime: '昨天 16:45'
 			},
 			{
 				id: 'fp003',
 				name: '西湖龙井',
-				image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-				visitTime: '2023-05-13'
+				image: 'https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=120&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80',
+				visitTime: '3天前'
 			}
 		];
 		

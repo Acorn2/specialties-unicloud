@@ -1,20 +1,21 @@
 <template>
 	<view class="container">
 		<!-- 顶部导航栏 -->
-		<view class="nav-bar bg-white shadow-sm">
-			<view class="flex items-center h-full px-4">
-				<view class="nav-back" @tap="goBack">
+		<view class="footprint-gradient pt-10 pb-3 px-4">
+			<view class="flex items-center">
+				<navigator open-type="navigateBack" class="text-white">
 					<text class="fas fa-arrow-left"></text>
-				</view>
-				<text class="nav-title">我的收藏</text>
-				<view class="w-5"></view> <!-- 占位元素，保持标题居中 -->
+				</navigator>
+				<text class="text-lg font-bold text-white ml-4 flex-1">我的收藏</text>
 			</view>
 		</view>
 		
 		<!-- 筛选标签 -->
-		<view class="p-4 pb-2">
-			<view class="flex justify-between items-center mb-3">
-				<text class="text-base font-medium">特产分类</text>
+		<view class="filter-section">
+			<view class="flex justify-between items-center filter-header">
+				<view class="category-title">
+					<text class="text-base font-medium">特产分类</text>
+				</view>
 				
 				<view class="view-mode-toggle flex-shrink-0">
 					<view class="view-mode-btn" :class="{'active': viewMode === 'list'}" @tap="switchViewMode('list')">列表</view>
@@ -22,12 +23,12 @@
 				</view>
 			</view>
 			
-			<!-- 标签式分类列表 -->
-			<view class="flex flex-wrap">
+			<!-- 标签式分类列表 - 网格布局 -->
+			<view class="category-wrap">
 				<view 
 					v-for="(category, key) in categories" 
 					:key="key"
-					class="list-category-btn" 
+					class="category-btn" 
 					:class="{'active': currentCategory === key}"
 					@tap="filterByCategory(key)">
 					{{category.name}}
@@ -36,17 +37,22 @@
 		</view>
 		
 		<!-- 收藏列表 -->
-		<scroll-view scroll-y="true" class="collection-list" @scrolltolower="loadMore">
+		<scroll-view scroll-y="true" class="scrollable-content" @scrolltolower="loadMore">
 			<view v-if="loading && filteredCollections.length === 0" class="flex justify-center items-center py-10">
 				<uni-load-more status="loading" :contentText="{ contentdown: '加载中...' }"></uni-load-more>
 			</view>
 			
-			<view v-else-if="filteredCollections.length === 0" class="flex flex-col justify-center items-center py-16">
-				<text class="fas fa-heart text-gray-300 text-5xl mb-4"></text>
-				<text class="text-gray-500 mb-2" v-if="currentCategory === 'all'">暂无收藏记录</text>
-				<text class="text-gray-500 mb-2" v-else>没有找到{{categories[currentCategory].name}}类特产</text>
-				<text class="text-gray-400 text-xs" v-if="currentCategory === 'all'">在特产详情页点击收藏按钮添加收藏</text>
-				<text class="text-gray-400 text-xs" v-else>您暂时没有收藏{{categories[currentCategory].name}}类特产，可以继续浏览发现更多</text>
+			<view v-else-if="filteredCollections.length === 0" class="empty-state">
+				<view class="empty-icon">
+					<text class="fas fa-heart text-[#D83931] text-3xl"></text>
+				</view>
+				<text class="font-medium mb-2" v-if="currentCategory === 'all'">暂无收藏内容</text>
+				<text class="font-medium mb-2" v-else>没有找到{{categories[currentCategory].name}}类特产</text>
+				<text class="text-sm text-gray-500 mb-4" v-if="currentCategory === 'all'">您可以收藏喜欢的特产，方便以后查找</text>
+				<text class="text-sm text-gray-500 mb-4" v-else>您暂时没有收藏{{categories[currentCategory].name}}类特产，可以继续浏览发现更多</text>
+				<navigator url="/pages/index/index" class="px-4 py-2 bg-[#D83931] text-white rounded-full text-sm">
+					去发现特产
+				</navigator>
 			</view>
 			
 			<!-- 列表视图 -->
@@ -54,32 +60,36 @@
 				<view 
 					v-for="(item, index) in filteredCollections" 
 					:key="index"
-					class="collection-item card mb-4">
-					<image :src="item.image" mode="aspectFill" class="w-full h-36 object-cover rounded-t-xl"></image>
+					class="collection-item mb-4">
+					<!-- 图片 -->
+					<image :src="item.image" mode="aspectFill" class="w-full object-cover"></image>
 					
+					<!-- 收藏和分享按钮 -->
 					<view class="collection-actions">
-						<button class="action-btn" @tap.stop="cancelCollection(item.id)">
-							<text class="fas fa-heart text-[#D83931]"></text>
+						<button class="action-btn heart-btn" @tap.stop="cancelCollection(item.id)">
+							<view class="icon-heart"></view>
 						</button>
-						<button class="action-btn" @tap.stop="shareSpecialty(item)">
-							<text class="fas fa-share-alt text-gray-600"></text>
+						<button class="action-btn share-btn" @tap.stop="shareSpecialty(item)">
+							<view class="icon-share"></view>
 						</button>
 					</view>
 					
+					<!-- 内容区域 -->
 					<view class="p-3">
-						<view class="flex justify-between mb-2">
-							<text class="font-medium">{{item.name}}</text>
-							<text class="text-xs text-gray-500">{{item.province}}·{{item.city}}</text>
+						<view class="title-row">
+							<text class="item-title">{{item.name}}</text>
+							<text class="item-location">{{item.province}}·{{item.city}}</text>
 						</view>
-						<view class="mb-2">
+						<view class="mb-2 category-container">
 							<text class="item-category" :class="getCategoryClass(item.category)">{{item.categoryName || '特产'}}</text>
 						</view>
-						<text class="text-xs text-gray-600">{{item.description || '暂无描述'}}</text>
+						<text class="item-desc">{{item.description || '暂无描述'}}</text>
 						<view class="flex justify-between items-center mt-2">
-							<text class="text-xs text-gray-500">
-								<text class="fas fa-eye mr-1"></text> {{item.viewCount || '0'}}
-							</text>
-							<navigator :url="`/pages/detail/detail?id=${item.id}`" class="text-xs text-[#D83931] bg-red-50 px-3 py-1 rounded-full">
+							<view class="view-count">
+								<view class="icon-eye"></view>
+								<text>{{item.viewCount || '0'}}</text>
+							</view>
+							<navigator :url="`/pages/detail/detail?id=${item.id}`" class="detail-btn">
 								查看详情
 							</navigator>
 						</view>
@@ -105,13 +115,13 @@
 						class="grid-item">
 						<image :src="item.image" mode="aspectFill"></image>
 						<button class="favorite-btn" @tap.stop="cancelCollection(item.id)">
-							<text class="fas fa-heart text-[#D83931]"></text>
+							<view class="icon-heart"></view>
 						</button>
 						<view class="grid-info">
 							<text class="text-sm font-medium mb-1 text-ellipsis">{{item.name}}</text>
 							<view class="flex justify-between items-center">
 								<text class="text-xs text-gray-500 text-ellipsis">{{item.province}}·{{item.city}}</text>
-								<text class="item-category text-[9px]" :class="getCategoryClass(item.category)">{{item.categoryName || '特产'}}</text>
+								<text class="item-category" :class="getCategoryClass(item.category)">{{item.categoryName || '特产'}}</text>
 							</view>
 						</view>
 					</navigator>
@@ -139,7 +149,7 @@
 				pageSize: 10,
 				loading: false,
 				hasMore: true,
-				viewMode: 'grid', // 默认网格视图
+				viewMode: 'list', // 默认列表视图
 				currentCategory: 'all',
 				categories: {
 					all: { name: "全部", color: "#D83931", icon: "fa-th-large" },
@@ -167,7 +177,9 @@
 			async getCollections() {
 				try {
 					this.loading = true;
-					const { data: res } = await this.$cloud.callFunction({
+					
+					// 调用云函数 - 使用 uniCloud.callFunction 代替 this.$cloud.callFunction
+					const { result } = await uniCloud.callFunction({
 						name: 'profile',
 						data: {
 							action: 'getCollections',
@@ -177,18 +189,18 @@
 						}
 					});
 					
-					if (res.code === 0) {
+					if (result.code === 0) {
 						if (this.page === 1) {
-							this.collections = res.data.list;
+							this.collections = result.data.list;
 						} else {
-							this.collections = [...this.collections, ...res.data.list];
+							this.collections = [...this.collections, ...result.data.list];
 						}
 						
 						this.filterCollections();
-						this.hasMore = res.data.hasMore;
+						this.hasMore = result.data.hasMore;
 					} else {
 						uni.showToast({
-							title: res.msg || '获取收藏失败',
+							title: result.msg || '获取收藏失败',
 							icon: 'none'
 						});
 					}
@@ -266,7 +278,8 @@
 					success: async (res) => {
 						if (res.confirm) {
 							try {
-								const { data: result } = await this.$cloud.callFunction({
+								// 调用云函数取消收藏
+								const { result } = await uniCloud.callFunction({
 									name: 'profile',
 									data: {
 										action: 'cancelCollection',
@@ -326,107 +339,248 @@
 	flex-direction: column;
 }
 
-.nav-bar {
-	height: 44px;
-	width: 100%;
-	padding-top: var(--status-bar-height);
-	position: sticky;
-	top: 0;
-	z-index: 100;
-	
-	.nav-back {
-		width: 24px;
-		height: 24px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #333;
-	}
-	
-	.nav-title {
-		flex: 1;
-		text-align: center;
-		font-size: 16px;
-		font-weight: 500;
-		color: #333;
-	}
+/* 顶部导航栏样式 */
+.footprint-gradient {
+    background: linear-gradient(135deg, #D83931, #A82825);
+    width: 100%;
+    position: relative;
+    z-index: 100;
 }
 
-.collection-list {
+.text-white {
+    color: #ffffff;
+}
+
+.text-lg {
+    font-size: 18px;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.ml-4 {
+    margin-left: 16px;
+}
+
+.pt-10 {
+    padding-top: 40px; /* 适配状态栏高度 */
+}
+
+.pb-3 {
+    padding-bottom: 12px;
+}
+
+.px-4 {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.fas.fa-arrow-left {
+    font-size: 20px;
+}
+
+.scrollable-content {
 	flex: 1;
 	overflow-y: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+	position: relative;
+}
+
+.scrollable-content::-webkit-scrollbar {
+	width: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 2px;
+}
+
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	text-align: center;
+}
+
+.empty-icon {
+	width: 80px;
+	height: 80px;
+	border-radius: 40px;
+	background-color: rgba(216, 57, 49, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 16px;
 }
 
 .view-mode-toggle {
-	background-color: white;
+	background-color: #EEEEEE;
 	border-radius: 20px;
-	padding: 4px;
+	padding: 2px;
 	display: flex;
-	width: 80px;
-	margin-left: auto;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	width: 96px;
+	height: 32px;
+	overflow: hidden;
 }
 
 .view-mode-btn {
 	flex: 1;
-	text-align: center;
-	padding: 2px 0;
-	border-radius: 16px;
-	font-size: 12px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
 	color: #666;
+	
+	&.active {
+		background-color: #D83931;
+		color: white;
+		font-weight: 500;
+		border-radius: 18px;
+	}
 }
 
-.view-mode-btn.active {
-	background-color: #D83931;
-	color: white;
+.filter-section {
+	padding: 16px 16px 8px;
+	background-color: #F8F5F1;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.list-category-btn {
+.filter-header {
+	margin-bottom: 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.category-title {
+	position: relative;
+}
+
+.text-base.font-medium {
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+	position: relative;
+	padding-left: 10px;
+	
+	&::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 4px;
+		height: 16px;
+		background-color: #D83931;
+		border-radius: 2px;
+	}
+}
+
+.category-wrap {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 -4px;
+}
+
+.category-btn {
 	padding: 8px 16px;
 	border-radius: 20px;
-	font-size: 13px;
+	font-size: 14px;
 	background-color: #F0ECE6;
 	color: #666666;
-	margin-right: 8px;
-	margin-bottom: 8px;
+	margin: 0 4px 10px 4px;
 	transition: all 0.2s ease;
-}
-
-.list-category-btn.active {
-	background-color: #D83931;
-	color: white;
+	
+	&.active {
+		background-color: #D83931;
+		color: white;
+		font-weight: 500;
+	}
+	
+	&:first-child {
+		background-color: #D83931;
+		color: white;
+	}
 }
 
 .collection-item {
 	position: relative;
 	background-color: #fff;
-	border-radius: 12px;
+	border-radius: 8px;
 	overflow: hidden;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	margin-bottom: 16px;
+}
+
+.card {
+	border-radius: 12px;
+	background: white;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	transition: all 0.3s ease;
 }
 
 .collection-actions {
 	position: absolute;
-	top: 10px;
-	right: 10px;
+	top: 12px;
+	right: 12px;
 	display: flex;
 	gap: 8px;
+	z-index: 100;
 }
 
 .action-btn {
-	width: 32px;
-	height: 32px;
+	width: 38px;
+	height: 38px;
 	border-radius: 50%;
 	background-color: rgba(255, 255, 255, 0.9);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	padding: 0;
+	border: none;
 	
 	&::after {
 		border: none;
+		display: none;
 	}
+}
+
+.heart-btn {
+	color: #D83931;
+}
+
+.share-btn {
+	color: #666;
+}
+
+/* 收藏按钮心形图标 */
+.action-btn .fa-heart {
+	font-size: 18px;
+	color: #D83931;
+}
+
+/* 分享按钮图标 */
+.action-btn .fa-share-alt {
+	font-size: 18px;
+	color: #666;
 }
 
 .action-btn:active {
@@ -437,13 +591,14 @@
 .item-category {
 	display: inline-block;
 	font-size: 10px;
-	padding: 1px 6px;
-	border-radius: 10px;
-	margin-right: 6px;
+	padding: 2px 8px;
+	border-radius: 12px;
+	background-color: #9B59B6;
+	color: white;
 }
 
 .food-tag {
-	background-color: #F7C873;
+	background-color: #FFD166;
 	color: #8B5000;
 }
 
@@ -488,21 +643,60 @@
 	background-color: white;
 }
 
+/* 网格视图中的位置文本样式调整 */
+.grid-info .text-xs.text-gray-500 {
+	font-size: 9px; /* 将地址文本字体缩小 */
+	color: #999; /* 稍微降低对比度 */
+	max-width: 65%; /* 限制最大宽度，为分类标签留出空间 */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* 网格视图中的分类标签调整 */
+.grid-info .item-category {
+	margin-left: auto; /* 将分类标签推到右侧 */
+	font-size: 9px; /* 确保字体大小一致 */
+	padding: 1px 6px; /* 调整内边距使标签更小巧 */
+	border-radius: 10px;
+}
+
+/* 调整网格项中的底部行布局 */
+.grid-info .flex.justify-between.items-center {
+	display: flex;
+	justify-content: space-between; /* 确保两端对齐 */
+	align-items: center;
+	margin-top: 4px; /* 与上方标题保持适当间距 */
+	width: 100%;
+}
+
 .favorite-btn {
 	position: absolute;
 	top: 8px;
 	right: 8px;
-	width: 28px;
-	height: 28px;
+	width: 30px;
+	height: 30px;
 	border-radius: 50%;
 	background-color: rgba(255, 255, 255, 0.9);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+	padding: 0;
 	
 	&::after {
 		border: none;
+		display: none;
+	}
+	
+	.icon-heart {
+		width: 16px;
+		height: 16px;
+	}
+	
+	&:active {
+		transform: scale(0.95);
+		background-color: rgba(255, 255, 255, 0.85);
 	}
 }
 
@@ -512,15 +706,149 @@
 	text-overflow: ellipsis;
 }
 
-.card {
-	border-radius: 12px;
-	background: white;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	transition: all 0.3s ease;
+.collection-item .p-3 {
+	padding: 16px;
+}
+
+.collection-item .text-xs.text-gray-500 {
+	font-size: 10px;
+	line-height: 1.2;
+}
+
+.collection-item .font-medium {
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+.collection-item .text-xs.text-gray-600 {
+	font-size: 11px;
+	line-height: 1.4;
+	max-height: 2.8em;
+	overflow: hidden;
+}
+
+.collection-item image {
+	width: 100%;
+	height: 180px;
+	object-fit: cover;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.collection-item .flex.justify-between.items-center {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.detail-btn {
+	padding: 4px 12px;
+	border-radius: 16px;
+	color: #D83931;
+	background-color: rgba(216, 57, 49, 0.1);
+	font-size: 12px;
+	text-align: center;
+	margin-left: auto;
+}
+
+.collection-item.card {
+	border-radius: 8px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	
 	&:active {
 		transform: scale(0.98);
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
+}
+
+.title-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+	width: 100%;
+}
+
+.item-title {
+	font-size: 16px;
+	font-weight: 500;
+	color: #333;
+	flex: 1;
+}
+
+.item-location {
+	font-size: 12px;
+	color: #888;
+	text-align: right;
+}
+
+.item-desc {
+	font-size: 12px;
+	line-height: 1.4;
+	color: #666;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	max-height: 2.8em;
+	margin-top: 4px;
+}
+
+.view-count {
+	display: flex;
+	align-items: center;
+	font-size: 12px;
+	color: #888;
+}
+
+.view-count .fas {
+	margin-right: 4px;
+}
+
+/* 心形图标 */
+.icon-heart {
+	width: 18px;
+	height: 18px;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23D83931' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+	background-size: contain;
+}
+
+/* 分享图标 */
+.icon-share {
+	width: 18px;
+	height: 18px;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath fill='%23666666' d='M352 320c-22.608 0-43.387 7.819-59.79 20.895l-102.486-64.054a96.551 96.551 0 0 0 0-41.683l102.486-64.054C308.613 184.181 329.392 192 352 192c53.019 0 96-42.981 96-96S405.019 0 352 0s-96 42.981-96 96c0 7.158.79 14.13 2.276 20.841l-102.486 64.054C139.387 167.819 118.608 160 96 160c-53.019 0-96 42.981-96 96s42.981 96 96 96c22.608 0 43.387-7.819 59.79-20.895l102.486 64.054A96.301 96.301 0 0 0 256 416c0 53.019 42.981 96 96 96s96-42.981 96-96-42.981-96-96-96z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+	background-size: contain;
+}
+
+/* 眼睛图标 */
+.icon-eye {
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath fill='%23888888' d='M572.52 241.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400a144 144 0 1 1 144-144 143.93 143.93 0 0 1-144 144zm0-240a95.31 95.31 0 0 0-25.31 3.79 47.85 47.85 0 0 1-66.9 66.9A95.78 95.78 0 1 0 288 160z'%3E%3C/path%3E%3C/svg%3E") no-repeat center center;
+	background-size: contain;
+	display: inline-block;
+}
+
+.view-count {
+	display: flex;
+	align-items: center;
+	font-size: 12px;
+	color: #888;
+}
+
+.mb-2 {
+	margin-bottom: 12px;
+}
+
+.collection-item .mb-2 {
+	margin-bottom: 12px;
+}
+
+.category-container {
+	margin-top: 8px;
+	margin-bottom: 12px;
 }
 </style> 

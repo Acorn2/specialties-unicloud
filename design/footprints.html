@@ -291,7 +291,6 @@
             <div class="p-4">
                 <div class="tab-container">
                     <div class="tab active" data-view="list">列表</div>
-                    <div class="tab" data-view="timeline">时间轴</div>
                     <div class="tab" data-view="map">地图</div>
                 </div>
             </div>
@@ -385,107 +384,11 @@
                 </div>
             </div>
             
-            <!-- 时间轴视图 -->
-            <div class="timeline-view px-4 pb-4">
-                <!-- 今天 -->
-                <div class="timeline-container">
-                    <div class="timeline-line"></div>
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-date">今天</div>
-                    
-                    <div class="footprint-item card ml-2 mb-6">
-                        <img src="https://images.unsplash.com/photo-1605197181726-e3bd08490ba1?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="郫县豆瓣酱" class="w-full h-36 object-cover rounded-t-xl">
-                        <div class="footprint-date">10:30</div>
-                        <div class="footprint-info">
-                            <div class="flex justify-between mb-2">
-                                <h3 class="font-medium">郫县豆瓣酱</h3>
-                                <span class="text-xs text-gray-500">四川省·成都</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="footprint-category food-tag">副食</span>
-                            </div>
-                            <p class="text-xs text-gray-600">四川郫县特产，色泽红亮，香辣浓郁，被誉为川菜的灵魂。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 昨天 -->
-                <div class="timeline-container">
-                    <div class="timeline-line"></div>
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-date">昨天</div>
-                    
-                    <div class="footprint-item card ml-2 mb-6">
-                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY3JhZnR8fHx8fHwxNjQ5NTQwMTYy&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="苏州刺绣" class="w-full h-36 object-cover rounded-t-xl">
-                        <div class="footprint-date">16:45</div>
-                        <div class="footprint-info">
-                            <div class="flex justify-between mb-2">
-                                <h3 class="font-medium">苏州刺绣</h3>
-                                <span class="text-xs text-gray-500">江苏省·苏州</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="footprint-category craft-tag">工艺品</span>
-                            </div>
-                            <p class="text-xs text-gray-600">中国四大名绣之一，以绣工精细、针法严谨、色彩典雅著称。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 3天前 -->
-                <div class="timeline-container">
-                    <div class="timeline-line"></div>
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-date">3天前</div>
-                    
-                    <div class="footprint-item card ml-2 mb-6">
-                        <img src="https://images.unsplash.com/photo-1613614210474-4960ab6b3eb5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsdGVhfHx8fHx8MTY0OTU0MDQxMQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="西湖龙井" class="w-full h-36 object-cover rounded-t-xl">
-                        <div class="footprint-info">
-                            <div class="flex justify-between mb-2">
-                                <h3 class="font-medium">西湖龙井</h3>
-                                <span class="text-xs text-gray-500">浙江省·杭州</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="footprint-category drink-tag">茶饮</span>
-                            </div>
-                            <p class="text-xs text-gray-600">中国十大名茶之一，以色翠、香郁、味甘、形美四绝著称。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 5天前 -->
-                <div class="timeline-container">
-                    <div class="timeline-line"></div>
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-date">5天前</div>
-                    
-                    <div class="footprint-item card ml-2 mb-6">
-                        <img src="https://images.unsplash.com/photo-1551326844-dc5bbc0dadd6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=180&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1Mzk2NjE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=380" alt="热干面" class="w-full h-36 object-cover rounded-t-xl">
-                        <div class="footprint-info">
-                            <div class="flex justify-between mb-2">
-                                <h3 class="font-medium">热干面</h3>
-                                <span class="text-xs text-gray-500">湖北省·武汉</span>
-                            </div>
-                            <div class="mb-2">
-                                <span class="footprint-category food-tag">主食</span>
-                            </div>
-                            <p class="text-xs text-gray-600">武汉名小吃，香、咸、辣、甜，回味悠长。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- 地图视图 -->
             <div class="map-view px-4 pb-4">
                 <!-- 地图容器 -->
-                <div class="map-container">
-                    <!-- 假设的地图背景 -->
-                    <img src="https://images.unsplash.com/photo-1578827833595-5cb30eeb9a41?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" alt="中国地图" class="w-full h-full object-cover">
-                    
-                    <!-- 地图标记点 -->
-                    <div class="map-marker" style="top: 40%; left: 30%;">川</div>
-                    <div class="map-marker" style="top: 45%; left: 70%;">苏</div>
-                    <div class="map-marker" style="top: 38%; left: 75%;">浙</div>
-                    <div class="map-marker" style="top: 42%; left: 57%;">鄂</div>
+                <div class="map-container" id="chinaMap">
+                    <!-- ECharts 将在这里渲染 -->
                 </div>
                 
                 <!-- 足迹列表 -->
@@ -569,12 +472,29 @@
         
     </div>
     
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <script>
+        // 定义全局变量以存储图表实例
+        let mapChart = null;
+        
         // 初始化视图切换
         document.addEventListener('DOMContentLoaded', function() {
+            // 确认 echarts 对象已加载
+            if (typeof echarts === 'undefined') {
+                console.error('ECharts 库未正确加载');
+                document.getElementById('chinaMap').innerHTML = `
+                    <div class="flex items-center justify-center h-full flex-col">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-2"></i>
+                        <p class="text-sm text-gray-600">地图组件加载失败，请刷新页面重试</p>
+                    </div>
+                `;
+                return;
+            }
+            
             // 获取所有标签和视图元素
             const tabs = document.querySelectorAll('.tab');
-            const views = document.querySelectorAll('.list-view, .timeline-view, .map-view');
+            const views = document.querySelectorAll('.list-view, .map-view');
             
             // 为每个标签绑定点击事件
             tabs.forEach(tab => {
@@ -618,6 +538,9 @@
             
             // 检查是否有足迹记录
             checkEmptyState();
+            
+            // 初始化地图
+            initMap();
         });
         
         // 更新分类数据映射
@@ -703,7 +626,6 @@
             
             // 显示空状态，隐藏视图
             document.querySelector('.list-view').classList.add('hidden');
-            document.querySelector('.timeline-view').classList.add('hidden');
             document.querySelector('.map-view').classList.add('hidden');
             emptyState.classList.remove('hidden');
         }
@@ -748,7 +670,6 @@
                 
                 // 隐藏所有视图
                 document.querySelector('.list-view').classList.add('hidden');
-                document.querySelector('.timeline-view').classList.add('hidden');
                 document.querySelector('.map-view').classList.add('hidden');
                 
                 // 显示空状态
@@ -756,6 +677,232 @@
             } else {
                 // 隐藏空状态
                 hideEmptyState();
+            }
+        }
+        
+        // 检查是否有足迹记录
+        function checkEmptyState() {
+            const footprintItems = document.querySelectorAll('.footprint-item');
+            
+            if (footprintItems.length === 0) {
+                // 如果没有足迹记录，显示空状态
+                const emptyState = document.getElementById('emptyState');
+                if (emptyState) {
+                    document.querySelector('.list-view').classList.add('hidden');
+                    document.querySelector('.map-view').classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                }
+            } else {
+                // 有足迹记录，隐藏空状态
+                hideEmptyState();
+            }
+        }
+        
+        // 初始化地图 - 移除散点标记
+        function initMap() {
+            try {
+                // 检查ECharts是否可用
+                if (typeof echarts === 'undefined') {
+                    throw new Error('ECharts 库未正确加载');
+                }
+                
+                // 获取地图容器
+                const container = document.getElementById('chinaMap');
+                if (!container) {
+                    throw new Error('找不到地图容器元素');
+                }
+                
+                // 初始化 ECharts 实例
+                mapChart = echarts.init(container);
+                
+                // 定义足迹数据 - 省份列表
+                const visitedProvinces = ['四川', '湖北', '江苏', '浙江', '甘肃'];
+                
+                // 先设置一个空配置，防止初始化错误
+                mapChart.setOption({
+                    backgroundColor: '#F8F5F1'
+                });
+                
+                // 加载全国地图数据
+                fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+                    .then(response => response.json())
+                    .then(geoJson => {
+                        // 注册地图
+                        echarts.registerMap('china', geoJson);
+                        
+                        // 准备地图区域数据 - 用于高亮去过的省份
+                        const mapData = [];
+                        
+                        // 为每个省份设置数据
+                        geoJson.features.forEach(feature => {
+                            if (feature.properties && feature.properties.name) {
+                                const name = feature.properties.name;
+                                
+                                // 检查是否去过该省份
+                                const isVisited = visitedProvinces.some(province => 
+                                    name.includes(province) || province.includes(name)
+                                );
+                                
+                                if (isVisited) {
+                                    // 去过的省份 - 设置高值和自定义样式
+                                    mapData.push({
+                                        name: name,
+                                        value: 100,
+                                        itemStyle: {
+                                            areaColor: '#ffd8d6', // 浅红色高亮
+                                            borderColor: '#D83931', // 红色边框
+                                            borderWidth: 1
+                                        }
+                                    });
+                                } else {
+                                    // 未去过的省份 - 设置低值
+                                    mapData.push({
+                                        name: name,
+                                        value: 0
+                                    });
+                                }
+                            }
+                        });
+                        
+                        // 修复配置 - 移除散点系列
+                        const option = {
+                            backgroundColor: '#F8F5F1',
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: function(params) {
+                                    if (params.seriesType === 'map') {
+                                        const isVisited = params.value === 100;
+                                        return `<div style="padding: 4px 8px;">
+                                            <b>${params.name}</b><br/>
+                                            ${isVisited ? '您已探索过这里的特产' : '您还没有探索过这里'}
+                                        </div>`;
+                                    }
+                                    return params.name;
+                                }
+                            },
+                            visualMap: {
+                                type: 'piecewise',
+                                show: false,
+                                min: 0,
+                                max: 100,
+                                inRange: {
+                                    color: ['#e5e5e5', '#ffd8d6'] // 从灰色到浅红色
+                                }
+                            },
+                            series: [
+                                {
+                                    name: '省份',
+                                    type: 'map',
+                                    map: 'china',
+                                    roam: true,
+                                    zoom: 1.2,
+                                    data: mapData,
+                                    label: {
+                                        show: false
+                                    },
+                                    itemStyle: {
+                                        areaColor: '#e5e5e5',
+                                        borderColor: '#ccc',
+                                        borderWidth: 0.5
+                                    },
+                                    emphasis: {
+                                        itemStyle: {
+                                            areaColor: '#d5d5d5'
+                                        },
+                                        label: {
+                                            show: false
+                                        }
+                                    }
+                                }
+                            ]
+                        };
+                        
+                        // 使用 clear 清除之前的实例，然后重新设置
+                        mapChart.clear();
+                        // 设置配置项并渲染
+                        mapChart.setOption(option);
+                        
+                        // 添加点击事件处理
+                        mapChart.off('click');
+                        mapChart.on('click', function(params) {
+                            // 处理点击事件
+                            if (params.seriesType === 'map' && params.value === 100) {
+                                // 点击了去过的省份
+                                console.log(`点击了${params.name}的足迹`);
+                                filterFootprintsByProvince(params.name);
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('加载地图数据失败:', error);
+                        container.innerHTML = `
+                            <div class="flex items-center justify-center h-full flex-col">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-2"></i>
+                                <p class="text-sm text-gray-600">地图数据加载失败，请刷新重试</p>
+                            </div>
+                        `;
+                    });
+                
+                // 窗口大小变化时自动调整地图大小
+                window.addEventListener('resize', function() {
+                    if (mapChart) {
+                        mapChart.resize();
+                    }
+                });
+                
+                // 切换到地图视图时重新渲染地图
+                document.querySelector('.tab[data-view="map"]').addEventListener('click', function() {
+                    setTimeout(() => {
+                        if (mapChart) {
+                            mapChart.resize();
+                        }
+                    }, 100);
+                });
+            } catch (error) {
+                console.error('初始化地图过程中发生错误:', error);
+                document.getElementById('chinaMap').innerHTML = `
+                    <div class="flex items-center justify-center h-full flex-col">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-2"></i>
+                        <p class="text-sm text-gray-600">初始化地图失败: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 根据省份筛选足迹
+        function filterFootprintsByProvince(provinceName) {
+            // 获取所有足迹项
+            const footprintItems = document.querySelectorAll('.footprint-item');
+            
+            // 显示筛选结果
+            let hasVisibleItems = false;
+            
+            footprintItems.forEach(item => {
+                // 获取省份信息
+                const provinceInfo = item.querySelector('.text-xs.text-gray-500');
+                if (!provinceInfo) return;
+                
+                const itemProvince = provinceInfo.textContent.split('·')[0].trim();
+                
+                if (itemProvince.includes(provinceName) || provinceName.includes(itemProvince)) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 如果没有找到匹配的足迹，显示提示
+            if (!hasVisibleItems) {
+                showFilterEmptyState(provinceName);
+            } else {
+                hideEmptyState();
+                
+                // 切换到列表视图以显示筛选结果
+                const listTab = document.querySelector('.tab[data-view="list"]');
+                if (listTab) {
+                    listTab.click();
+                }
             }
         }
     </script>

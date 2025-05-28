@@ -29,16 +29,16 @@
 						查看全部省份 <text class="fas fa-chevron-right ml-1"></text>
 					</view>
 				</view>
-				<scroll-view scroll-x="true" class="flex whitespace-nowrap py-1" show-scrollbar="false">
-					<button 
+				<view class="province-pills-container">
+					<view 
 						v-for="(province, index) in currentRegionProvinces" 
 						:key="index"
-						class="province-btn" 
+						class="province-pill" 
 						:class="{'active': currentProvince === province.id}"
 						@tap="selectProvince(province.id)">
 						{{province.name}}
-					</button>
-				</scroll-view>
+					</view>
+				</view>
 			</view>
 		</view>
 		
@@ -156,21 +156,19 @@
 		
 		<!-- 省份选择模态框 (默认隐藏) -->
 		<uni-popup ref="provinceModal" type="bottom" background-color="#FFF" border-radius="10px 10px 0 0">
-			<view class="modal-container">
-				<view class="p-4 border-b border-gray-100">
-					<view class="flex justify-between items-center">
-						<text class="font-bold">选择省份</text>
-						<view @tap="closeProvinceModal" class="p-1">
-							<text class="fas fa-times text-gray-500"></text>
-						</view>
+			<view class="province-modal">
+				<view class="modal-header">
+					<text class="modal-title">选择省份</text>
+					<view class="close-btn" @tap="closeProvinceModal">
+						<text class="fas fa-times"></text>
 					</view>
 				</view>
 				
 				<!-- 区域分组的省份列表 -->
-				<scroll-view scroll-y="true" class="p-4 modal-content">
-					<view v-for="(regionGroup, index) in groupedProvinces" :key="index" class="mb-4">
-						<text class="text-sm text-gray-500 mb-2 block">{{regionGroup.regionName}}</text>
-						<view class="grid grid-cols-4 gap-2">
+				<scroll-view scroll-y="true" class="modal-content">
+					<view v-for="(regionGroup, index) in groupedProvinces" :key="index" class="region-group">
+						<text class="region-group-title">{{regionGroup.regionName}}</text>
+						<view class="province-grid">
 							<button 
 								v-for="(province, pIndex) in regionGroup.provinces" 
 								:key="pIndex"
@@ -268,39 +266,39 @@ export default {
 			// 省份数据
 			allProvinces: [
 				{ id: 'hubei', name: '湖北', regionId: 'huazhong', geoCode: '420000', center: [112.29, 30.98] },
-				{ id: 'hunan', name: '湖南', regionId: 'huazhong' },
-				{ id: 'henan', name: '河南', regionId: 'huazhong' },
+				{ id: 'hunan', name: '湖南', regionId: 'huazhong', geoCode: '430000', center: [112.98, 28.19] },
+				{ id: 'henan', name: '河南', regionId: 'huazhong', geoCode: '410000', center: [113.75, 34.76] },
 				{ id: 'guangdong', name: '广东', regionId: 'huanan', geoCode: '440000', center: [113.28, 23.13] },
-				{ id: 'guangxi', name: '广西', regionId: 'huanan' },
+				{ id: 'guangxi', name: '广西', regionId: 'huanan', geoCode: '450000', center: [108.32, 22.82] },
+				{ id: 'hainan', name: '海南', regionId: 'huanan', geoCode: '460000', center: [110.35, 20.02] },
 				{ id: 'sichuan', name: '四川', regionId: 'xinan', geoCode: '510000', center: [102.71, 30.65] },
-				{ id: 'yunnan', name: '云南', regionId: 'xinan' },
-				{ id: 'zhejiang', name: '浙江', regionId: 'huadong' },
-				{ id: 'jiangsu', name: '江苏', regionId: 'huadong' },
-				{ id: 'shanghai', name: '上海', regionId: 'huadong' },
-				{ id: 'anhui', name: '安徽', regionId: 'huadong' },
-				{ id: 'fujian', name: '福建', regionId: 'huadong' },
-				{ id: 'jiangxi', name: '江西', regionId: 'huadong' },
-				{ id: 'shandong', name: '山东', regionId: 'huadong' },
-				{ id: 'beijing', name: '北京', regionId: 'huabei' },
-				{ id: 'tianjin', name: '天津', regionId: 'huabei' },
-				{ id: 'hebei', name: '河北', regionId: 'huabei' },
-				{ id: 'shanxi', name: '山西', regionId: 'huabei' },
-				{ id: 'neimenggu', name: '内蒙古', regionId: 'huabei' },
-				{ id: 'chongqing', name: '重庆', regionId: 'xinan' },
-				{ id: 'guizhou', name: '贵州', regionId: 'xinan' },
-				{ id: 'xizang', name: '西藏', regionId: 'xinan' },
-				{ id: 'liaoning', name: '辽宁', regionId: 'dongbei' },
-				{ id: 'jilin', name: '吉林', regionId: 'dongbei' },
-				{ id: 'heilongjiang', name: '黑龙江', regionId: 'dongbei' },
-				{ id: 'shaanxi', name: '陕西', regionId: 'xibei' },
-				{ id: 'gansu', name: '甘肃', regionId: 'xibei' },
-				{ id: 'qinghai', name: '青海', regionId: 'xibei' },
-				{ id: 'ningxia', name: '宁夏', regionId: 'xibei' },
-				{ id: 'xinjiang', name: '新疆', regionId: 'xibei' },
-				{ id: 'hainan', name: '海南', regionId: 'huanan' },
-				{ id: 'xianggang', name: '香港', regionId: 'gangaotai' },
-				{ id: 'aomen', name: '澳门', regionId: 'gangaotai' },
-				{ id: 'taiwan', name: '台湾', regionId: 'gangaotai' }
+				{ id: 'yunnan', name: '云南', regionId: 'xinan', geoCode: '530000', center: [102.71, 25.04] },
+				{ id: 'guizhou', name: '贵州', regionId: 'xinan', geoCode: '520000', center: [106.71, 26.57] },
+				{ id: 'xizang', name: '西藏', regionId: 'xinan', geoCode: '540000', center: [91.11, 29.97] },
+				{ id: 'chongqing', name: '重庆', regionId: 'xinan', geoCode: '500000', center: [106.55, 29.56] },
+				{ id: 'zhejiang', name: '浙江', regionId: 'huadong', geoCode: '330000', center: [120.15, 30.28] },
+				{ id: 'jiangsu', name: '江苏', regionId: 'huadong', geoCode: '320000', center: [118.76, 32.04] },
+				{ id: 'shanghai', name: '上海', regionId: 'huadong', geoCode: '310000', center: [121.47, 31.23] },
+				{ id: 'anhui', name: '安徽', regionId: 'huadong', geoCode: '340000', center: [117.27, 31.86] },
+				{ id: 'fujian', name: '福建', regionId: 'huadong', geoCode: '350000', center: [119.30, 26.08] },
+				{ id: 'jiangxi', name: '江西', regionId: 'huadong', geoCode: '360000', center: [115.89, 28.68] },
+				{ id: 'shandong', name: '山东', regionId: 'huadong', geoCode: '370000', center: [117.00, 36.65] },
+				{ id: 'beijing', name: '北京', regionId: 'huabei', geoCode: '110000', center: [116.40, 39.90] },
+				{ id: 'tianjin', name: '天津', regionId: 'huabei', geoCode: '120000', center: [117.20, 39.13] },
+				{ id: 'hebei', name: '河北', regionId: 'huabei', geoCode: '130000', center: [114.52, 38.04] },
+				{ id: 'shanxi', name: '山西', regionId: 'huabei', geoCode: '140000', center: [112.56, 37.87] },
+				{ id: 'neimenggu', name: '内蒙古', regionId: 'huabei', geoCode: '150000', center: [111.65, 40.82] },
+				{ id: 'liaoning', name: '辽宁', regionId: 'dongbei', geoCode: '210000', center: [123.43, 41.80] },
+				{ id: 'jilin', name: '吉林', regionId: 'dongbei', geoCode: '220000', center: [125.32, 43.89] },
+				{ id: 'heilongjiang', name: '黑龙江', regionId: 'dongbei', geoCode: '230000', center: [126.63, 45.75] },
+				{ id: 'shaanxi', name: '陕西', regionId: 'xibei', geoCode: '610000', center: [108.95, 34.26] },
+				{ id: 'gansu', name: '甘肃', regionId: 'xibei', geoCode: '620000', center: [103.82, 36.06] },
+				{ id: 'qinghai', name: '青海', regionId: 'xibei', geoCode: '630000', center: [101.78, 36.62] },
+				{ id: 'ningxia', name: '宁夏', regionId: 'xibei', geoCode: '640000', center: [106.27, 38.47] },
+				{ id: 'xinjiang', name: '新疆', regionId: 'xibei', geoCode: '650000', center: [87.62, 43.79] },
+				{ id: 'xianggang', name: '香港', regionId: 'gangaotai', geoCode: '810000', center: [114.17, 22.28] },
+				{ id: 'aomen', name: '澳门', regionId: 'gangaotai', geoCode: '820000', center: [113.54, 22.19] },
+				{ id: 'taiwan', name: '台湾', regionId: 'gangaotai', geoCode: '710000', center: [121.50, 25.04] }
 			],
 			
 			// 分类数据
@@ -1121,39 +1119,11 @@ body {
 }
 
 .province-btn {
-    padding: 6px 10px;
-    border-radius: 16px;
-    font-size: 12px;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-right: 8px;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.province-btn.active {
-    background-color: #D83931;
-    color: white;
-}
-
-.province-btn:active {
-    transform: scale(0.95);
+    /* 可以保留但不再使用，或者合并到 province-pill 中 */
 }
 
 .province-grid-btn {
-    padding: 8px 4px;
-    border-radius: 8px;
-    font-size: 13px;
-    background-color: #F0ECE6;
-    color: #333;
-    transition: all 0.2s ease;
-    border: none;
-}
-
-.province-grid-btn.active {
-    background-color: #D83931;
-    color: white;
+    /* 可以保留但不再使用，或者合并到 province-pill 中 */
 }
 
 .category-btn {
@@ -1568,5 +1538,110 @@ body {
 
 /deep/ .uni-popup .uni-popup__wrapper-bottom {
     border-radius: 16px 16px 0 0;
+}
+
+/* 添加到样式部分 */
+.province-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 4px 0;
+}
+
+.province-pill {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  background-color: #f5f5f5;
+  color: #333333;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.province-pill.active {
+  background-color: #D83931;
+  color: white;
+}
+
+.province-pill:active {
+  transform: scale(0.95);
+}
+
+/* 省份选择模态框样式 */
+.province-modal {
+  width: 100%;
+  max-height: 70vh;
+  background-color: #FFFFFF;
+  border-top-left-radius: 40rpx;
+  border-top-right-radius: 40rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 30rpx;
+  border-bottom: 2rpx solid #F0F0F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.close-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  flex: 1;
+  padding: 30rpx;
+  max-height: 60vh;
+}
+
+.region-group {
+  margin-bottom: 30rpx;
+}
+
+.region-group-title {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 16rpx;
+}
+
+.province-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+
+.province-grid-btn {
+  padding: 16rpx 8rpx;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  background-color: #F0ECE6;
+  color: #333333;
+  text-align: center;
+  transition: all 0.2s ease;
+  border: none;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.province-grid-btn.active {
+  background-color: #D83931;
+  color: #FFFFFF;
+}
+
+.province-grid-btn::after {
+  border: none;
 }
 </style>

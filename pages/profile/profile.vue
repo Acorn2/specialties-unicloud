@@ -90,13 +90,13 @@
 			<view class="divider mt-6"></view>
 			
 			<view class="bg-white">
-				<navigator url="/pages/profile/collections" class="menu-item">
+				<view class="menu-item">
 					<view class="menu-icon bg-red-50">
 						<text class="fas fa-heart text-[#D83931]"></text>
 					</view>
-					<text class="flex-1">我的收藏</text>
+					<navigator url="/pages/profile/collections" class="flex-1">我的收藏</navigator>
 					<text class="fas fa-chevron-right text-gray-300"></text>
-				</navigator>
+				</view>
 			</view>
 			
 			<view class="divider"></view>

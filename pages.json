@@ -79,6 +79,13 @@
 			"navigationBarTitleText": "隐私政策",
 			"navigationStyle": "custom"
 		}
+	},
+	{
+		"path": "pages/about/about",
+		"style": {
+			"navigationBarTitleText": "关于我们",
+			"navigationStyle": "custom"
+		}
 	}
 	],
 	"globalStyle": {

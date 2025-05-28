@@ -42,7 +42,7 @@
 			</view>
 
 			<!-- 特产分类 -->
-			<view class="section-container">
+			<view class="section-container category-section">
 				<view class="section-header">
 					<text class="section-title">特产分类</text>
 					<view class="section-more" @tap="navigateToCategory">
@@ -159,11 +159,11 @@ export default {
             // uni.navigateTo({ url });
 		},
 		navigateToCategory(categoryId) {
-			let url = '/pages/category/category'; // 假设分类列表页
+			let url = '/pages/map-specialty/map-specialty'; // 假设分类列表页
 			if (categoryId) {
 				// url += `?id=${categoryId}`;
 			}
-			uni.navigateTo({ url });
+			uni.switchTab({ url });
 		},
 		navigateToDetail(id) {
 			uni.navigateTo({ url: `/pages/detail/detail?id=${id}` });
@@ -237,10 +237,14 @@ export default {
 
 .section-container {
 	padding: 0 30rpx;
-	margin-top: 40rpx; // 20px
+	margin-top: 30rpx; // 从40rpx减小到30rpx
 	&.recommended-section {
 		margin-bottom: 40rpx; // 20px
 	}
+}
+
+.section-container.category-section {
+	margin-top: 20rpx; // 特产分类与热门目的地之间的间距更小
 }
 
 .section-header {
@@ -266,10 +270,14 @@ export default {
 
 .horizontal-scroll-view {
 	white-space: nowrap; // 关键，使内部元素横向排列
+	height: 260rpx; // 添加固定高度，与卡片高度一致
+	overflow: hidden; // 确保不会溢出
+	margin-bottom: 0; // 确保底部没有多余的边距
+	padding-bottom: 0; // 确保底部没有多余的内边距
 	.destination-card {
 		display: inline-block; // 使卡片横向排列
 		width: 220rpx; // 110px
-		height: 300rpx; // 150px
+		height: 260rpx; // 从300rpx减小到260rpx
 		border-radius: 32rpx; // 16px
 		overflow: hidden;
 		box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.1);

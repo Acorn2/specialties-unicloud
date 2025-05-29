@@ -70,3 +70,5 @@ project.private.config.json
 
 # Vue-cli 相关
 .history/ 
+
+unpackage/

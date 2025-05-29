@@ -1,0 +1,100 @@
+[
+  {
+    "id": "all",
+    "name": "全部",
+    "icon": "fa-th-large",
+    "iconColor": "#D83931",
+    "iconBgColor": "rgba(216, 57, 49, 0.1)"
+  },
+  {
+    "id": "food",
+    "name": "主食",
+    "icon": "fa-bowl-rice",
+    "iconColor": "#F7C873",
+    "iconBgColor": "rgba(247, 200, 115, 0.1)"
+  },
+  {
+    "id": "material",
+    "name": "副食",
+    "icon": "fa-jar",
+    "iconColor": "#9B59B6",
+    "iconBgColor": "rgba(155, 89, 182, 0.1)"
+  },
+  {
+    "id": "snack",
+    "name": "小吃",
+    "icon": "fa-cookie",
+    "iconColor": "#58D68D",
+    "iconBgColor": "rgba(88, 214, 141, 0.1)"
+  },
+  {
+    "id": "dessert",
+    "name": "零食",
+    "icon": "fa-candy-bar",
+    "iconColor": "#E74C3C",
+    "iconBgColor": "rgba(231, 76, 60, 0.1)"
+  },
+  {
+    "id": "alcohol",
+    "name": "烟酒",
+    "icon": "fa-wine-bottle",
+    "iconColor": "#7F8C8D",
+    "iconBgColor": "rgba(127, 140, 141, 0.1)"
+  },
+  {
+    "id": "tea",
+    "name": "茶叶",
+    "icon": "fa-mug-hot",
+    "iconColor": "#1ABC9C",
+    "iconBgColor": "rgba(26, 188, 156, 0.1)"
+  },
+  {
+    "id": "drink",
+    "name": "饮料",
+    "icon": "fa-glass",
+    "iconColor": "#3498DB",
+    "iconBgColor": "rgba(52, 152, 219, 0.1)"
+  },
+  {
+    "id": "fruit",
+    "name": "水果",
+    "icon": "fa-apple-whole",
+    "iconColor": "#2ECC71",
+    "iconBgColor": "rgba(46, 204, 113, 0.1)"
+  },
+  {
+    "id": "vegetable",
+    "name": "蔬菜",
+    "icon": "fa-carrot",
+    "iconColor": "#16A085",
+    "iconBgColor": "rgba(22, 160, 133, 0.1)"
+  },
+  {
+    "id": "seafood",
+    "name": "水产海鲜",
+    "icon": "fa-fish",
+    "iconColor": "#0E6EAE",
+    "iconBgColor": "rgba(14, 110, 174, 0.1)"
+  },
+  {
+    "id": "craft",
+    "name": "工艺品",
+    "icon": "fa-scissors",
+    "iconColor": "#8E44AD",
+    "iconBgColor": "rgba(142, 68, 173, 0.1)"
+  },
+  {
+    "id": "medicine",
+    "name": "药材",
+    "icon": "fa-mortar-pestle",
+    "iconColor": "#D35400",
+    "iconBgColor": "rgba(211, 84, 0, 0.1)"
+  },
+  {
+    "id": "flower",
+    "name": "花卉",
+    "icon": "fa-seedling",
+    "iconColor": "#27AE60",
+    "iconBgColor": "rgba(39, 174, 96, 0.1)"
+  }
+]

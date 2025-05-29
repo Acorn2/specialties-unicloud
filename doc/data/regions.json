@@ -1,0 +1,10 @@
+[
+    { "id": "huadong", "name": "华东" },
+    { "id": "huanan", "name": "华南" },
+    { "id": "huazhong", "name": "华中" },
+    { "id": "huabei", "name": "华北" },
+    { "id": "xinan", "name": "西南" },
+    { "id": "dongbei", "name": "东北" },
+    { "id": "xibei", "name": "西北" },
+    { "id": "gangaotai", "name": "港澳台" }
+  ]

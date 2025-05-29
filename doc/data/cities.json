@@ -1,0 +1,200 @@
+[
+  {
+    "code": "chengdu",
+    "name": "成都市",
+    "pinyin": "chengdu",
+    "provinceCode": "sichuan",
+    "provinceName": "四川省",
+    "region": "xinan",
+    "specialtyCount": 56,
+    "tags": ["川菜", "火锅", "小吃"],
+    "image": "https://images.unsplash.com/photo-1542190891-2093d38760f2?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg0ODE&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "hangzhou",
+    "name": "杭州市",
+    "pinyin": "hangzhou",
+    "provinceCode": "zhejiang",
+    "provinceName": "浙江省",
+    "region": "huadong",
+    "specialtyCount": 48,
+    "tags": ["茶叶", "丝绸", "点心"],
+    "image": "https://images.unsplash.com/photo-1517309230475-6736d926b979?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg1NTI&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "guangzhou",
+    "name": "广州市",
+    "pinyin": "guangzhou",
+    "provinceCode": "guangdong",
+    "provinceName": "广东省",
+    "region": "huanan",
+    "specialtyCount": 42,
+    "tags": ["粤菜", "点心", "药材"],
+    "image": "https://images.unsplash.com/photo-1508009603885-50cf7c8dd0d5?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2MjA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "suzhou",
+    "name": "苏州市",
+    "pinyin": "suzhou",
+    "provinceCode": "jiangsu",
+    "provinceName": "江苏省",
+    "region": "huadong",
+    "specialtyCount": 39,
+    "tags": ["丝绸", "点心", "小吃"],
+    "image": "https://images.unsplash.com/photo-1510332981392-36692ea3a195?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2MzA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "xian",
+    "name": "西安市",
+    "pinyin": "xian",
+    "provinceCode": "shaanxi",
+    "provinceName": "陕西省",
+    "region": "xibei",
+    "specialtyCount": 37,
+    "tags": ["小吃", "面食", "肉类"],
+    "image": "https://images.unsplash.com/photo-1528201907966-4032e43339a6?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2NDA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "qingdao",
+    "name": "青岛市",
+    "pinyin": "qingdao",
+    "provinceCode": "shandong",
+    "provinceName": "山东省",
+    "region": "huadong",
+    "specialtyCount": 35,
+    "tags": ["海鲜", "啤酒", "小吃"],
+    "image": "https://images.unsplash.com/photo-1518834107812-67b0b7c58434?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2NTA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "kunming",
+    "name": "昆明市",
+    "pinyin": "kunming",
+    "provinceCode": "yunnan",
+    "provinceName": "云南省",
+    "region": "xinan",
+    "specialtyCount": 34,
+    "tags": ["茶叶", "鲜花", "药材"],
+    "image": "https://images.unsplash.com/photo-1517900347-0db362251acd?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2NjA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "shenzhen",
+    "name": "深圳市",
+    "pinyin": "shenzhen",
+    "provinceCode": "guangdong",
+    "provinceName": "广东省",
+    "region": "huanan",
+    "specialtyCount": 32,
+    "tags": ["粤菜", "海鲜", "点心"],
+    "image": "https://images.unsplash.com/photo-1575738869402-9b796ef63b26?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2NzA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "wuhan",
+    "name": "武汉市",
+    "pinyin": "wuhan",
+    "provinceCode": "hubei",
+    "provinceName": "湖北省",
+    "region": "huazhong",
+    "specialtyCount": 31,
+    "tags": ["热干面", "小吃", "鲜食"],
+    "image": "https://images.unsplash.com/photo-1513415564515-fef26e71a5fc?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2ODA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "nanjing",
+    "name": "南京市",
+    "pinyin": "nanjing",
+    "provinceCode": "jiangsu",
+    "provinceName": "江苏省",
+    "region": "huadong",
+    "specialtyCount": 29,
+    "tags": ["云锦", "点心", "小吃"],
+    "image": "https://images.unsplash.com/photo-1535756377588-75e83291d582?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg2OTA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "shanghai",
+    "name": "上海市",
+    "pinyin": "shanghai",
+    "provinceCode": "shanghai",
+    "provinceName": "上海市",
+    "region": "huadong",
+    "specialtyCount": 43,
+    "tags": ["点心", "小吃", "丝绸"],
+    "image": "https://images.unsplash.com/photo-1465639091255-5b383ecb9321?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsY2l0eXx8fHx8fDE2NDk1Mzg3MDA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "beijing",
+    "name": "北京市",
+    "pinyin": "beijing",
+    "provinceCode": "beijing",
+    "provinceName": "北京市",
+    "region": "huabei",
+    "specialtyCount": 46,
+    "tags": ["烤鸭", "小吃", "宫廷菜"],
+    "image": "https://images.unsplash.com/photo-1563990262971-695bc4cb7e69?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8YmVpamluZ3x8fHx8fDE2NDk1Mzg3MTA&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "jiangmen",
+    "name": "江门市",
+    "pinyin": "jiangmen",
+    "provinceCode": "guangdong",
+    "provinceName": "广东省",
+    "region": "huanan",
+    "specialtyCount": 25,
+    "tags": ["水果", "陈皮", "小吃"],
+    "image": "https://images.unsplash.com/photo-1534766438357-2b270dbd1b48?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "yichang",
+    "name": "宜昌市",
+    "pinyin": "yichang",
+    "provinceCode": "hubei",
+    "provinceName": "湖北省",
+    "region": "huazhong",
+    "specialtyCount": 24,
+    "tags": ["水果", "茶叶", "鱼类"],
+    "image": "https://images.unsplash.com/photo-1591183137550-fd9c8ff4a485?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "ezhou",
+    "name": "鄂州市",
+    "pinyin": "ezhou",
+    "provinceCode": "hubei",
+    "provinceName": "湖北省",
+    "region": "huazhong",
+    "specialtyCount": 18,
+    "tags": ["莲藕", "水产", "小吃"],
+    "image": "https://images.unsplash.com/photo-1544467468-9ad659372f66?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "shiyan",
+    "name": "十堰市",
+    "pinyin": "shiyan",
+    "provinceCode": "hubei",
+    "provinceName": "湖北省",
+    "region": "huazhong",
+    "specialtyCount": 20,
+    "tags": ["酒类", "茶叶", "药材"],
+    "image": "https://images.unsplash.com/photo-1584225064785-c62a8b43d148?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "enshi",
+    "name": "恩施市",
+    "pinyin": "enshi",
+    "provinceCode": "hubei",
+    "provinceName": "湖北省",
+    "region": "huazhong",
+    "specialtyCount": 22,
+    "tags": ["茶叶", "药材", "小吃"],
+    "image": "https://images.unsplash.com/photo-1582542734256-c0d3fea2500b?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=100&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2hpbmEsZm9vZHx8fHx8fDE2NDk1MzgyNDQ&ixlib=rb-1.2.1&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=100"
+  },
+  {
+    "code": "guangyuan",
+    "name": "广元市",
+    "pinyin": "guangyuan",
+    "provinceCode": "sichuan",
+    "provinceName": "四川省",
+    "region": "xinan",
+    "specialtyCount": 19,
+    "tags": ["小吃", "药材", "茶叶"],
+    "image": "https://via.placeholder.com/100"
+  }
+]
